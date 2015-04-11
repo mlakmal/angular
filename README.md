@@ -665,56 +665,60 @@
 
 ### Singletons
 
-  - Services are instantiated with the `new` keyword, use `this` for public methods and variables. Since these are so similar to factories, use a factory instead for consistency.
+  - Services are instantiated with the `new` keyword, use `this` for public methods and variables.
 
     Note: [All Angular services are singletons](https://docs.angularjs.org/guide/services). This means that there is only one instance of a given service per injector.
 
   ```javascript
   // service
-  angular
-      .module('app')
-      .service('logger', logger);
+  ﻿'use strict';
 
-  function logger() {
-    this.logError = function(msg) {
-      /* */
-    };
-  }
+  define(['app'], function (app) {
+
+      var injectParams = ['$q',
+                          '$cookieStore'];
+
+      var someService = function ($q,
+                                   $cookieStore) {
+
+          this.getValue = function (objectName) {
+          };
+
+          this.setValue = function (objectName, objectValue) {
+          };
+
+          function setCookie(appCookie) {
+          };
+
+          function getCookie() {
+          };
+
+      };
+
+      someService.$inject = injectParams;
+
+      app.service('someSvc', someService);
+      //below register can be used if service is registered after angular.bootstrap
+      //app.register.service('someSvc', someService);
+
+  });
+
   ```
 
-  ```javascript
-  // factory
-  angular
-      .module('app')
-      .factory('logger', logger);
-
-  function logger() {
-      return {
-          logError: function(msg) {
-            /* */
-          }
-     };
-  }
-  ```
-
-**[Back to top](#table-of-contents)**
 
 ## Factories
 
 ### Single Responsibility
-###### [Style [Y050](#style-y050)]
 
   - Factories should have a [single responsibility](http://en.wikipedia.org/wiki/Single_responsibility_principle), that is encapsulated by its context. Once a factory begins to exceed that singular purpose, a new factory should be created.
 
 ### Singletons
-###### [Style [Y051](#style-y051)]
 
   - Factories are singletons and return an object that contains the members of the service.
 
     Note: [All Angular services are singletons](https://docs.angularjs.org/guide/services).
 
 ### Accessible Members Up Top
-###### [Style [Y052](#style-y052)]
 
   - Expose the callable members of the service (its interface) at the top, using a technique derived from the [Revealing Module Pattern](http://addyosmani.com/resources/essentialjsdesignpatterns/book/#revealingmodulepatternjavascript).
 
@@ -724,56 +728,63 @@
 
     *Why?*: Setting functions as you go can be easy, but when those functions are more than 1 line of code they can reduce the readability and cause more scrolling. Defining the callable interface via the returned service moves the implementation details down, keeps the callable interface up top, and makes it easier to read.
 
-  ```javascript
-  /* avoid */
-  function dataService() {
-    var someValue = '';
-    function save() {
-      /* */
-    };
-    function validate() {
-      /* */
-    };
-
-    return {
-        save: save,
-        someValue: someValue,
-        validate: validate
-    };
-  }
-  ```
 
   ```javascript
-  /* recommended */
-  function dataService() {
-      var someValue = '';
-      var service = {
-          save: save,
-          someValue: someValue,
-          validate: validate
-      };
-      return service;
+  // factory
+  ﻿'use strict';
 
-      ////////////
+  define(['app'], function (app) {
 
-      function save() {
-          /* */
+      var injectParams = ['$http',
+                          '$q',
+                          'cookieHelper',
+                          '$translate',
+                          'contentModules'];
+
+      var someFactory = function ($http,
+                                     $q,
+                                     cookieHelper,
+                                     $translate,
+                                     contentModules) {
+                                       
+          var serviceBase = 'rest:api:url',
+              factory = {
+                        anotherPublicFunction: anotherPublicFunction,
+                        loadContent: loadContent,
+                        publicProperty: true
+                      };
+
+          return factory;
+
+          function loadContent(param) {
+
+              //call rest api to get data
+              return $http.post(serviceBase + 'operation?param=' + param, {}).then(function (results) {
+              }, function (error) {
+              });
+
+              function someFunction(module) {
+              }
+
+          };
+
+          function anotherPublicFunction(){
+          };
       };
 
-      function validate() {
-          /* */
-      };
-  }
+      someFactory.$inject = injectParams;
+
+      app.factory('someFac', someFactory);
+      //below register can be used if service is registered after angular.bootstrap
+      app.register.factory('someFac', someFactory);
+
+  });
+
   ```
-
-  This way bindings are mirrored across the host object, primitive values cannot update alone using the revealing module pattern.
-
-    ![Factories Using "Above the Fold"](https://raw.githubusercontent.com/johnpapa/angular-styleguide/master/assets/above-the-fold-2.png)
 
 ### Function Declarations to Hide Implementation Details
-###### [Style [Y053](#style-y053)]
 
-  - Use function declarations to hide implementation details. Keep your accessible members of the factory up top. Point those to function declarations that appears later in the file. For more details see [this post](http://www.johnpapa.net/angular-function-declarations-function-expressions-and-readable-code).
+  - Use function declarations to hide implementation details. Keep your accessible members of the factory up top. Point those to function declarations that appears later in the file. For more details see [this post](http://www.johnpapa.net/angular-function-declarations-function-expressions-and-readable-code). Refer above factory code.
 
     *Why?*: Placing accessible members at the top makes it easy to read and helps you instantly identify which functions of the factory you can access externally.
 
@@ -785,95 +796,10 @@
 
     *Why?*: Order is critical with function expressions
 
-  ```javascript
-  /**
-   * avoid
-   * Using function expressions
-   */
-   function dataservice($http, $location, $q, exception, logger) {
-      var isPrimed = false;
-      var primePromise;
-
-      var getAvengers = function() {
-          // implementation details go here
-      };
-
-      var getAvengerCount = function() {
-          // implementation details go here
-      };
-
-      var getAvengersCast = function() {
-         // implementation details go here
-      };
-
-      var prime = function() {
-         // implementation details go here
-      };
-
-      var ready = function(nextPromises) {
-          // implementation details go here
-      };
-
-      var service = {
-          getAvengersCast: getAvengersCast,
-          getAvengerCount: getAvengerCount,
-          getAvengers: getAvengers,
-          ready: ready
-      };
-
-      return service;
-  }
-  ```
-
-  ```javascript
-  /**
-   * recommended
-   * Using function declarations
-   * and accessible members up top.
-   */
-  function dataservice($http, $location, $q, exception, logger) {
-      var isPrimed = false;
-      var primePromise;
-
-      var service = {
-          getAvengersCast: getAvengersCast,
-          getAvengerCount: getAvengerCount,
-          getAvengers: getAvengers,
-          ready: ready
-      };
-
-      return service;
-
-      ////////////
-
-      function getAvengers() {
-          // implementation details go here
-      }
-
-      function getAvengerCount() {
-          // implementation details go here
-      }
-
-      function getAvengersCast() {
-          // implementation details go here
-      }
-
-      function prime() {
-          // implementation details go here
-      }
-
-      function ready(nextPromises) {
-          // implementation details go here
-      }
-  }
-  ```
-
-**[Back to top](#table-of-contents)**
 
 ## Data Services
 
 ### Separate Data Calls
-###### [Style [Y060](#style-y060)]
 
   - Refactor logic for making data operations and interacting with data to a factory. Make data services responsible for XHR calls, local storage, stashing in memory, or any other data operations.
 
@@ -883,35 +809,57 @@
 
     *Why?*: Data service implementation may have very specific code to handle the data repository. This may include headers, how to talk to the data, or other services such as `$http`. Separating the logic into a data service encapsulates this logic in a single place hiding the implementation from the outside consumers (perhaps a controller), also making it easier to change the implementation.
 
+
   ```javascript
-  /* recommended */
+  // factory
+  ﻿'use strict';
 
-  // dataservice factory
-  angular
-      .module('app.core')
-      .factory('dataservice', dataservice);
+  define(['app'], function (app) {
 
-  dataservice.$inject = ['$http', 'logger'];
+      var injectParams = ['$http',
+                          '$q',
+                          'cookieHelper',
+                          '$translate',
+                          'contentModules'];
 
-  function dataservice($http, logger) {
-      return {
-          getAvengers: getAvengers
+      var someDataService = function ($http,
+                                     $q,
+                                     cookieHelper,
+                                     $translate,
+                                     contentModules) {
+                                       
+          var serviceBase = 'rest:api:url',
+              factory = {
+                        getData: getData
+                      };
+
+          return factory;
+
+          function getData(param) {
+
+              //call rest api to get data
+              return $http.post(serviceBase + 'operation?param=' + param, {}).then(handleSuccess, handleError);
+
+              function handleSuccess(results) {
+              }
+
+              function handleError(error) {
+              }
+
+          };
+
+          function anotherPublicFunction(){
+          };
       };
 
-      function getAvengers() {
-          return $http.get('/api/maa')
-              .then(getAvengersComplete)
-              .catch(getAvengersFailed);
+      someDataService.$inject = injectParams;
 
-          function getAvengersComplete(response) {
-              return response.data.results;
-          }
+      app.factory('someDataSvc', someDataService);
+      //below register can be used if service is registered after angular.bootstrap
+      app.register.factory('someDataSvc', someDataService);
 
-          function getAvengersFailed(error) {
-              logger.error('XHR Failed for getAvengers.' + error.data);
-          }
-      }
-  }
+  });
+
   ```
 
     Note: The data service is called from consumers, such as a controller, hiding the implementation from the consumers, as shown below.
@@ -920,80 +868,46 @@
   /* recommended */
 
   // controller calling the dataservice factory
-  angular
-      .module('app.avengers')
-      .controller('Avengers', Avengers);
+  'use strict';
+  define(['app'], function (app) {
 
-  Avengers.$inject = ['dataservice', 'logger'];
+      var injectParams = ['$scope',
+                          '$location',
+                          '$filter',
+                          '$window',
+                          '$timeout',
+                          'someDataSvc'];
 
-  function Avengers(dataservice, logger) {
-      var vm = this;
-      vm.avengers = [];
+      var SomeController = function ($scope,
+                                     $location,
+                                     $filter,
+                                     $window,
+                                     $timeout,
+                                     someDataSvc) {
+                                       
+          $scope.awesomeThings = [1,2,3];
+          var vm = this;
+          vm.data = [];
+          init();
 
-      activate();
+          function init() {
+            loadData();
+          }
 
-      function activate() {
-          return getAvengers().then(function() {
-              logger.info('Activated Avengers View');
-          });
-      }
+          function loadData(){
+            someDataSvc.getData().then(function(data){
+              vm.data = data;
+            });
+          }
 
-      function getAvengers() {
-          return dataservice.getAvengers()
-              .then(function(data) {
-                  vm.avengers = data;
-                  return vm.avengers;
-              });
-      }
-  }
+      };
+
+      SomeController.$inject = injectParams;
+
+      app.register.controller('SomeCtrl', SomeController);
+  });
+
   ```
-
-### Return a Promise from Data Calls
-###### [Style [Y061](#style-y061)]
-
-  - When calling a data service that returns a promise such as `$http`, return a promise in your calling function too.
-
-    *Why?*: You can chain the promises together and take further action after the data call completes and resolves or rejects the promise.
-
-  ```javascript
-  /* recommended */
-
-  activate();
-
-  function activate() {
-      /**
-       * Step 1
-       * Ask the getAvengers function for the
-       * avenger data and wait for the promise
-       */
-      return getAvengers().then(function() {
-          /**
-           * Step 4
-           * Perform an action on resolve of final promise
-           */
-          logger.info('Activated Avengers View');
-      });
-  }
-
-  function getAvengers() {
-        /**
-         * Step 2
-         * Ask the data service for the data and wait
-         * for the promise
-         */
-        return dataservice.getAvengers()
-            .then(function(data) {
-                /**
-                 * Step 3
-                 * set the data and resolve the promise
-                 */
-                vm.avengers = data;
-                return vm.avengers;
-        });
-  }
-  ```
-
-**[Back to top](#table-of-contents)**
 
 ## Directives
 ### Limit 1 Per File
