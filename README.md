@@ -224,7 +224,7 @@
 
     ```
 
-#### Test File Names
+#### Test File Naming
 
   - Name test specifications similar to the component they test with a suffix of `spec`.
 
@@ -242,13 +242,17 @@
     modalDir.spec.js
     ```
 
-#### Controller Names
+#### Controller Naming
 
   - Use consistent names for all controllers named after their feature. Use UpperCamelCase for controllers, as they are constructors.
 
     *Why?*: Provides a consistent way to quickly identify and reference controllers.
 
     *Why?*: UpperCamelCase is conventional for identifying object that can be instantiated using a constructor.
+
+  - Append the controller name with the suffix `Controller`.
+
+    *Why?*: The `Controller` suffix is more commonly used and is more explicitly descriptive.
 
     ```javascript
     /**
@@ -288,14 +292,9 @@
 
     ```
 
-#### Controller Name Suffix
-
-  - Append the controller name with the suffix `Controller`.
-
-    *Why?*: The `Controller` suffix is more commonly used and is more explicitly descriptive.
 
 
-#### Factory Names
+#### Factory Naming
 
   - Use consistent names for all factories named after their feature. Use camel-casing for services and factories. Avoid prefixing factories and services with `$`.
 
@@ -340,7 +339,7 @@
     });
     ```
 
-#### Service Names
+#### Service Naming
 
   - Use angular service for common feature components. Ex: cookie helper, session helper
 
@@ -385,7 +384,7 @@
 
     ```
 
-#### Directive Component Names
+#### Directive Naming
 
   - Use consistent names for all directives using camel-case. Use a short prefix to describe the area that the directives belong (use "tcp" prefix for consumer portal directive components).
 
@@ -445,7 +444,7 @@
 
     ```
 
-#### Filter Component Names
+#### Filter Naming
 
 - Use 'Filter' suffix for component name.
 
@@ -479,7 +478,7 @@
 
     ```
 
-#### Modules
+#### Module Naming
 
   - When there are multiple modules, the main module file is named `app.js` while other dependent modules are named after what they represent. For example, an admin module is named `adminModule.js`. The respective registered module names would be `app` and `admin`.
 
@@ -487,7 +486,7 @@
 
     *Why?*: Provides easy way to use task automation to load all module definitions first, then all other angular files (for bundling).
 
-#### Configuration
+##### Module Configuration Naming
 
   - Separate configuration for a module into its own file named after the module. A configuration file for the main `app` module is named `appConfig.js`. A configuration for a module named `adminModule.js` is named `adminConfig.js`.
 
@@ -495,7 +494,31 @@
 
     *Why?*: Provides an identifiable place to set configuration for a module.
 
-#### Routes
+  - Inject code into [module configuration](https://docs.angularjs.org/guide/module#module-loading-dependencies) that must be configured before running the angular app. Ideal candidates include providers and constants.
+
+    *Why?*: This makes it easier to have a less places for configuration.
+
+  ```javascript
+  app.config(configure);
+
+  configure.$inject =
+      ['routerHelperProvider', 'exceptionHandlerProvider', 'toastr'];
+
+  function configure (routerHelperProvider, exceptionHandlerProvider, toastr) {
+      exceptionHandlerProvider.configure(config.appErrorPrefix);
+      configureStateHelper();
+
+      ////////////////
+
+      function configureStateHelper() {
+          routerHelperProvider.configure({
+              docTitle: 'NG-Modular: '
+          });
+      }
+  }
+  ```
+
+#### Routes Naming
 
   - Separate route configuration into its own file. Examples will be `appRoutes.js` for the main module and `adminRoutes.js` for the `admin` module.
 
@@ -2094,33 +2117,6 @@ require(['common/services/routeResolver',
     > In a small app, you can also consider putting all the shared dependencies in the app module where the feature modules have no direct dependencies. This makes it easier to maintain the smaller application, but makes it harder to reuse modules outside of this application.
 
 
-## Startup Logic
-
-### Configuration
-
-  - Inject code into [module configuration](https://docs.angularjs.org/guide/module#module-loading-dependencies) that must be configured before running the angular app. Ideal candidates include providers and constants.
-
-    *Why?*: This makes it easier to have a less places for configuration.
-
-  ```javascript
-  app.config(configure);
-
-  configure.$inject =
-      ['routerHelperProvider', 'exceptionHandlerProvider', 'toastr'];
-
-  function configure (routerHelperProvider, exceptionHandlerProvider, toastr) {
-      exceptionHandlerProvider.configure(config.appErrorPrefix);
-      configureStateHelper();
-
-      ////////////////
-
-      function configureStateHelper() {
-          routerHelperProvider.configure({
-              docTitle: 'NG-Modular: '
-          });
-      }
-  }
-  ```
 
 ### Run Blocks
 
