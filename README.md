@@ -1149,98 +1149,8 @@
                         dependencies: [],
                         requireAuth: false
                     },
-                    {
-                        route: '/login',
-                        controllerName: 'LoginCtrl',
-                        rjsMod: 'loginCtrl',
-                        template: 'http://va10twpiss010:8081/cs/poc/login.html',
-                        controllerAs: 'vm',
-                        secure: false,
-                        dependencies: [],
-                        requireAuth: false
-                    },
-                    {
-                        route: '/register',
-                        controllerName: 'RegisterCtrl',
-                        rjsMod: 'regCtrl',
-                        template: 'http://va10twpiss010:8081/cs/poc/register.html',
-                        //template: 'register/register.html',
-                        controllerAs: 'vm',
-                        secure: false,
-                        dependencies: [],
-                        requireAuth: false
-                    },
-                    {
-                        route: '/consumer/dashboard-overview',
-                        controllerName: 'DashboardCtrl',
-                        rjsMod: 'dashCtrl',
-                        template: 'http://va10twpiss010:8081/cs/poc/dashboard-overview.html',
-                        controllerAs: 'vm',
-                        secure: false,
-                        dependencies: [],
-                        requireAuth: true
-                    },
-                    {
-                        route: '/consumer/claims-overview',
-                        controllerName: 'ClaimsOverviewCtrl',
-                        rjsMod: 'coCtrl',
-                        template: 'http://va10twpiss010:8081/cs/poc/claims-overview.html',
-                        controllerAs: 'vm',
-                        secure: false,
-                        dependencies: [],
-                        requireAuth: true
-                    },
-                    {
-                        route: '/consumer/medical',
-                        controllerName: 'MedicalCtrl',
-                        rjsMod: 'medCtrl',
-                        template: 'http://va10twpiss010:8081/cs/poc/medical-benefits.html',
-                        controllerAs: 'vm',
-                        secure: false,
-                        dependencies: [],
-                        requireAuth: true
-                    },
-                    {
-                        route: '/understanding-your-plans',
-                        controllerName: 'WcsCtrl',
-                        rjsMod: 'wcsCtrl',
-                        template: 'http://va10twpiss010:8081/cs/poc/understand-your-plans.html',
-                        controllerAs: 'vm',
-                        secure: false,
-                        dependencies: [],
-                        requireAuth: false
-                    },
-                    {
-                        route: '/contact-us',
-                        controllerName: 'WcsCtrl',
-                        rjsMod: 'wcsCtrl',
-                        template: 'http://va10twpiss010:8081/cs/poc/contact-us.html',
-                        controllerAs: 'vm',
-                        secure: false,
-                        dependencies: []
-                    },
-                    {
-                        route: '/404',
-                        controllerName: 'WcsCtrl',
-                        rjsMod: 'wcsCtrl',
-                        template: 'common/views/404.html',
-                        controllerAs: 'vm',
-                        secure: false,
-                        dependencies: [],
-                        requireAuth: false
-                    },
-                    {
-                        route: '/:name',
-                        controllerName: 'WcsCtrl',
-                        rjsMod: 'wcsCtrl',
-                        template: function (urlattr) {
-                            return 'http://va10twpiss010:8081/cs/poc/' + urlattr.name + '.html';
-                        },
-                        controllerAs: 'vm',
-                        secure: false,
-                        dependencies: [],
-                        requireAuth: false
-                    },
+                    ///////
+
                     {
                         route: '/consumer/:name',
                         controllerName: 'WcsCtrl',
@@ -1311,7 +1221,6 @@
 
     };
 
-    MainController.$inject = injectParams;
     app.register.controller('MainCtrl', MainController);
 
     This code may produce mangled variables when minified (like below) and thus cause runtime errors.
