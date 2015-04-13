@@ -230,7 +230,7 @@
 
   - Use unique naming conventions with separators for sub-modules.
 
-  *Why?*: Unique names help avoid module name collisions. Separators help define modules and their submodule hierarchy. For example `app` may be your root module while `app.dashboard` and `app.users` may be modules that are used as dependencies of `app`.
+  *Why?*: Unique names help avoid module name collisions. Separators help define modules and their submodule hierarchy. For example `app` may be your root module while `app.providerfinder` and `app.admin` may be modules that are used as dependencies of `app`.
 
   - Use unique naming conventions with prefix for directive definitions.
 
@@ -246,19 +246,9 @@
 
   define(['app'], function (app) {
 
-      var injectParams = ['$scope',
-                          '$location',
-                          '$filter',
-                          '$window',
-                          '$timeout',
-                          'cookieHelper'];
+      var injectParams = ['$scope'];
 
-      var SomeController = function ($scope,
-                                     $location,
-                                     $filter,
-                                     $window,
-                                     $timeout,
-                                     cookieHelper) {
+      var SomeController = function ($scope) {
                                        
           var vm = this;
           vm.translationComplete = true;
