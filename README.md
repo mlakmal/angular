@@ -10,7 +10,6 @@
   1. [Exception Handling](#exception-handling)
   1. [Naming Guidelines](#naming)
   1. [Modularity](#modularity)
-  1. [Startup Logic](#startup-logic)
   1. [Angular $ Wrapper Services](#angular--wrapper-services)
   1. [Testing](#testing)
   1. [Animations](#animations)
@@ -159,9 +158,7 @@
 
     Note: Do not use structuring using folders-by-type. This requires moving to multiple folders when working on a feature and gets unwieldy quickly as the app grows to 5, 10 or 25+ views and controllers (and other features), which makes it more difficult than folder-by-feature to locate files.
 
-### Naming
-
-#### Naming Guidelines
+### Naming Guidelines
 
   - Organize files first by major feature, then by file type.
     * the file path (`app\benefits\medicalCtrl.js`)
