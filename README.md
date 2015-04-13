@@ -1899,14 +1899,7 @@
     │   │   |    └── other-script-files.js
     │   │   └── libs
     │   │   |    └── external-library.js
-    │   └── asse
-    │       ├── CommonService.js
-    │       ├── cache
-    │       │   ├── Cache1.js
-    │       │   └── Cache2.js
-    │       └── models
-    │           ├── Model1.js
-    │           └── Model2.js
+    │   └── etc...
     ├── bower_components
     └── test
         ├── common
