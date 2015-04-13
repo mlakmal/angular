@@ -239,6 +239,8 @@
 
 ## Controllers
 
+- Do not manipulate DOM in your controllers, this will make your controllers harder for testing and will violate the Separation of Concerns principle. Use directives instead.
+
 ### Use below Controller definition for new controller creation.
 
   ```javascript
@@ -861,6 +863,8 @@
 
     *Why?*: One directive per file is easy to maintain.
 
+  - Name your directives with lowerCamelCase.
+
     > Note: "**Best Practice**: Directives should clean up after themselves. You can use `element.on('$destroy', ...)` or `scope.$on('$destroy', ...)` to run a clean-up function when the directive is removed" ... from the Angular documentation.
 
 
@@ -918,7 +922,7 @@
 
   ```
 
-    Note: There are many naming options for directives, especially since they can be used in narrow or wide scopes. Choose one that makes the directive and its file name distinct and clear. Some examples are below, but see the [Naming](#naming) section for more recommendations.
+    Note: See the [Naming](#naming) section for more recommendations.
 
 ### Manipulate DOM in a Directive
 
@@ -1043,7 +1047,7 @@
 
     *Why?*: The controller `init` makes it convenient to re-use the logic for a refresh for the controller/View, keeps the logic together, gets the user to the View faster, makes animations easy on the `ng-view` or `ui-view`, and feels snappier to the user.
 
-    Note: If you need to conditionally cancel the route before you start use the controller, use a [route resolve](#style-y081) instead.
+    Note: If you need to conditionally cancel the route before you start use the controller, use a [route resolve promises](#route-resolve-promises) instead.
 
   ```javascript
   /* avoid */
