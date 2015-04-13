@@ -1892,7 +1892,7 @@
   
   - File naming:
       Directory names should be all lower case - in case the directory name contains multiple words, use lisp-case syntax. Example: secure-messaging.
-      See [Naming Guidelines](#naming).
+      See [Naming Guidelines](#naming) to understnad how file naming and angular component naming should be handled.
 
 ### Folders-by-Feature Structure
 
