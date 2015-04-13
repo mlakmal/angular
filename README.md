@@ -1243,7 +1243,7 @@
     *Why?*: Avoid creating in-line dependencies as long lists can be difficult to read in the array. Also it can be confusing that the array is a series of strings while the last item is the component's function.
 
     ```javascript
-    /* avoid */
+    /* recommended */
     'use strict';
     define(['app'], function (app) {
 
@@ -1390,10 +1390,10 @@
             /**
              * Could add the error to a service's collection,
              * add errors to $rootScope, log errors to remote web server,
-             * or log locally. Or throw hard. It is entirely up to you.
+             * or log locally. Or throw hard.This is TBD. will be updated in future.
              * throw exception;
              */
-            toastr.error(exception.msg, errorData);
+            //toastr.error(exception.msg, errorData);
         };
     }
     ```
@@ -1408,25 +1408,6 @@
 
     ```javascript
     /* recommended */
-    angular
-        .module('blocks.exception')
-        .factory('exception', exception);
-
-    exception.$inject = ['logger'];
-
-    function exception(logger) {
-        var service = {
-            catcher: catcher
-        };
-        return service;
-
-        function catcher(message) {
-            return function(reason) {
-                logger.error(message, reason);
-            };
-        }
-    }
-
     'use strict';
 
     define(['app'], function (app) {
@@ -1434,15 +1415,18 @@
       var injectParams = ['logger'];
 
       var exceptionFactory = function (logger) {
-        var factory = {};
+        var factory = {
+          catcher: catcher
+        };
 
-        factory.catcher = function (message) {
+        return factory;
+
+        function catcher(message) {
             return function(reason) {
                 logger.error(message, reason);
             };
         }
 
-        return factory;
       };
 
       exceptionFactory.$inject = injectParams;
