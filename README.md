@@ -1222,6 +1222,7 @@
     };
 
     app.register.controller('MainCtrl', MainController);
+    ```
 
     This code may produce mangled variables when minified (like below) and thus cause runtime errors.
 
