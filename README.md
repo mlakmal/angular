@@ -1400,6 +1400,8 @@
 
 ### Exception Catchers
 
+  - This will be built into core application framework, and listed in this guide for reference/usage in your contrllers/services/directives.
+
   - Create a factory that exposes an interface to catch and gracefully handle exceptions.
 
     *Why?*: Provides a consistent way to catch exceptions that may be thrown in your code (e.g. during XHR calls or promise failures).
@@ -1438,6 +1440,8 @@
     ```
 
 ### Route Errors
+
+  - This will be built into core application framework, and listed in this guide for reference.
 
   - Handle and log all routing errors using [`$routeChangeError`](https://docs.angularjs.org/api/ngRoute/service/$route#$routeChangeError).
 
