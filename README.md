@@ -197,7 +197,7 @@
 
 ### RequireJs angular component registering with asynchrnous loading after angular.bootstrap executed.
 
-  - Use app.service, app.controller, app.directive, app.filter, app.factory etc to register the angular component with app module.
+  - Use app.register.service, app.register.controller, app.register.directive, app.register.filter, app.register.factory etc to register the angular component with app module.
 
   ```javascript
   /**
