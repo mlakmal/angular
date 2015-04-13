@@ -3,12 +3,7 @@
 ## Table of Contents
 
   1. [Application Structure](#application-structure)
-  1. [Modules](#modules)
-  1. [Controllers](#controllers)
-  1. [Services](#services)
-  1. [Factories](#factories)
-  1. [Data Services](#data-services)
-  1. [Directives](#directives)
+  1. [Angular Component Coding](#angular-component-coding)
   1. [Resolving Promises for a Controller](#resolving-promises-for-a-controller)
   1. [Manual Annotating for Dependency Injection](#manual-annotating-for-dependency-injection)
   1. [Minification and Annotation](#minification-and-annotation)
@@ -647,7 +642,7 @@
 
   ```
 
-## Angular Component Coding Guidelines
+## Angular Component Coding
 
 ### Modules
 
