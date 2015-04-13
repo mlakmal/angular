@@ -3,7 +3,6 @@
 ## Table of Contents
 
   1. [Application Structure](#application-structure)
-  1. [AMD](#amd)
   1. [Modules](#modules)
   1. [Controllers](#controllers)
   1. [Services](#services)
@@ -505,12 +504,15 @@
 
   - Separate route configuration into its own file. Examples will be `appRoutes.js` for the main module and `adminRoutes.js` for the `admin` module.
 
-## AMD
-### RequireJs Module Definition
+### Asynchronous Module Definition (AMD)
+
+- We use RequireJS to load the angular components asynchronously when required.
+
+*Why?*: This helps modules to be loaded asynchrnously through requirejs. Helps to reduce the initial javascript file size loaded to the browser and to improve performance.
+
+#### RequireJs Module Definition
 
   - Wrap Angular components in an RequireJs module definition.
-
-  *Why?*: This helps modules to be loaded asynchrnously through requirejs. Helps to reduce the initial javascript file size loaded to the browser and to improve performance.
 
   ```javascript
   /* avoid */
@@ -540,6 +542,7 @@
   // loggerSvc.js
   ﻿'use strict';
 
+  //requirejs definition for the current component
   define(['app'], function (app) {
 
       var injectParams = ['$q'];
@@ -562,7 +565,7 @@
 
   ```
 
-### RequireJs angular component with asynchrnous loading before angular.bootstrap executed.
+#### RequireJs angular component with asynchrnous loading before angular.bootstrap executed.
 
   - Use app.service, app.controller, app.directive, app.filter, app.factory etc to register the angular component with app module.
 
@@ -615,7 +618,7 @@
 
   ```
 
-### RequireJs angular component registering with asynchrnous loading after angular.bootstrap executed.
+#### RequireJs angular component registering with asynchrnous loading after angular.bootstrap executed.
 
   - Use app.register.service, app.register.controller, app.register.directive, app.register.filter, app.register.factory etc to register the angular component with app module.
 
@@ -644,9 +647,11 @@
 
   ```
 
-## Modules
+## Angular Component Coding Guidelines
 
-### Avoid Naming Collisions
+### Modules
+
+#### Avoid Naming Collisions
 
   - Use unique naming conventions with separators for sub-modules.
 
@@ -657,11 +662,11 @@
   *Why?*: Allow to share the directives with other teams and projects.
 
 
-## Controllers
+### Controllers
 
 - Do not manipulate DOM in your controllers, this will make your controllers harder for testing and will violate the Separation of Concerns principle. Use directives instead.
 
-### Use below Controller definition for new controller creation.
+#### Use below Controller definition for new controller creation.
 
   ```javascript
   'use strict';
@@ -689,7 +694,7 @@
   ```
 
 
-### controllerAs with vm
+#### controllerAs with vm
 
   - Use a capture variable for `this` when using the `controllerAs` syntax. Choose a consistent variable name such as `vm`, which stands for ViewModel.
 
@@ -743,7 +748,7 @@
   };
   ```
 
-### Bindable Members Up Top
+#### Bindable Members Up Top
 
   - Place bindable members at the top of the controller, alphabetized, and not spread through the controller code.
 
@@ -829,7 +834,7 @@
       vm.title = 'Sessions';
   ```
 
-### Function Declarations to Hide Implementation Details
+#### Function Declarations to Hide Implementation Details
 
   - Use function declarations to hide implementation details. Keep your bindable members up top. When you need to bind a function in a controller, point it to a function declaration that appears later in the file. This is tied directly to the section Bindable Members Up Top. For more details see [this post](http://www.johnpapa.net/angular-function-declarations-function-expressions-and-readable-code).
 
@@ -903,7 +908,7 @@
   }
   ```
 
-### Defer Controller Logic to Services
+#### Defer Controller Logic to Services
 
   - Defer logic in a controller by delegating to services and factories.
 
@@ -962,14 +967,14 @@
   }
   ```
 
-### Keep Controllers Focused
+#### Keep Controllers Focused
 
   - Define a controller for a view, and try not to reuse the controller for other views. Instead, move reusable logic to factories and keep the controller simple and focused on its view.
   - Exception for this would be webcenter specific pages that doesn't have any controller logic and will purely be used as cms page.
 
     *Why?*: Reusing controllers with several views is brittle and good end to end (e2e) test coverage is required to ensure stability across large applications.
 
-### Assigning Controllers
+#### Assigning Controllers
 
   - When a controller must be paired with a view and either component may be re-used by other controllers or views, define controllers along with their routes.
 
@@ -1025,9 +1030,9 @@
   </div>
   ```
 
-## Services
+### Services
 
-### Singletons
+#### Singletons
 
   - Services are instantiated with the `new` keyword, use `this` for public methods and variables.
 
@@ -1070,19 +1075,19 @@
   ```
 
 
-## Factories
+### Factories
 
-### Single Responsibility
+#### Single Responsibility
 
   - Factories should have a [single responsibility](http://en.wikipedia.org/wiki/Single_responsibility_principle), that is encapsulated by its context. Once a factory begins to exceed that singular purpose, a new factory should be created.
 
-### Singletons
+#### Singletons
 
   - Factories are singletons and return an object that contains the members of the service.
 
     Note: [All Angular services are singletons](https://docs.angularjs.org/guide/services).
 
-### Accessible Members Up Top
+#### Accessible Members Up Top
 
   - Expose the callable members of the service (its interface) at the top, using a technique derived from the [Revealing Module Pattern](http://addyosmani.com/resources/essentialjsdesignpatterns/book/#revealingmodulepatternjavascript).
 
@@ -1146,7 +1151,7 @@
 
   ```
 
-### Function Declarations to Hide Implementation Details
+#### Function Declarations to Hide Implementation Details
 
   - Use function declarations to hide implementation details. Keep your accessible members of the factory up top. Point those to function declarations that appears later in the file. For more details see [this post](http://www.johnpapa.net/angular-function-declarations-function-expressions-and-readable-code). Refer above factory code.
 
@@ -1161,9 +1166,9 @@
     *Why?*: Order is critical with function expressions
 
 
-## Data Services
+### Data Services
 
-### Separate Data Calls
+#### Separate Data Calls
 
   - Refactor logic for making data operations and interacting with data to a factory. Make data services responsible for XHR calls, local storage, stashing in memory, or any other data operations.
 
@@ -1274,8 +1279,8 @@
 
   ```
 
-## Directives
-### Limit 1 Per File
+### Directives
+#### Limit 1 Per File
 
   - Create one directive per file. Name the file for the directive.
 
@@ -1344,13 +1349,13 @@
 
     Note: See the [Naming Guidelines](#naming) section for more recommendations.
 
-### Manipulate DOM in a Directive
+#### Manipulate DOM in a Directive
 
   - When manipulating the DOM directly, use a directive. If alternative ways can be used such as using CSS to set styles or the [animation services](https://docs.angularjs.org/api/ngAnimate), Angular templating, [`ngShow`](https://docs.angularjs.org/api/ng/directive/ngShow) or [`ngHide`](https://docs.angularjs.org/api/ng/directive/ngHide), then use those instead. For example, if the directive simply hides and shows, use ngHide/ngShow.
 
     *Why?*: DOM manipulation can be difficult to test, debug, and there are often better ways (e.g. CSS, animations, templates)
 
-### Provide a Unique Directive Prefix
+#### Provide a Unique Directive Prefix
 
   - Provide a short, unique and descriptive directive prefix such as `tcpSomeDir` which would be declared in HTML as `tcp-some-dir`.
 
@@ -1358,7 +1363,7 @@
 
     Note: Avoid `ng-` as these are reserved for Angular directives. Research widely used directives to avoid naming conflicts, such as `ion-` for the [Ionic Framework](http://ionicframework.com/).
 
-### Restrict to Elements and Attributes
+#### Restrict to Elements and Attributes
 
   - When creating a directive that makes sense as a stand-alone element, allow restrict `E` (custom element) and optionally restrict `A` (custom attribute). Generally, if it could be its own control, `E` is appropriate. General guideline is allow `EA` but lean towards implementing as an element when it's stand-alone and as an attribute when it enhances its existing DOM element.
 
@@ -1379,7 +1384,7 @@
   <div my-calendar-range></div>
   ```
 
-### Directives and ControllerAs
+#### Directives and ControllerAs
 
   - Use `controller as` syntax with a directive to be consistent with using `controller as` with view and controller pairings.
 
