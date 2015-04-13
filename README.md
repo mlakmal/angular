@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-  1. [Single Responsibility](#single-responsibility)
+  1. [Application Structure](#application-structure)
   1. [AMD](#amd)
   1. [Modules](#modules)
   1. [Controllers](#controllers)
@@ -15,7 +15,6 @@
   1. [Minification and Annotation](#minification-and-annotation)
   1. [Exception Handling](#exception-handling)
   1. [Naming Guidelines](#naming)
-  1. [Application Structure](#application-structure)
   1. [Modularity](#modularity)
   1. [Startup Logic](#startup-logic)
   1. [Angular $ Wrapper Services](#angular--wrapper-services)
@@ -34,7 +33,10 @@
   1. [Contributing](#contributing)
   1. [License](#license)
 
-## Single Responsibility
+
+## Application Structure
+
+### Single Responsibility
 
   - Define 1 component per file.
 
@@ -83,6 +85,425 @@
 
   function someFactory() { }
   ```
+
+### Directory Structure
+
+    ```
+    .
+    ├── app
+    │   ├── app.js
+    │   ├── common
+    │   │   ├── controllers
+    │   │   │   ├── firstCtrl.js
+    │   │   │   └── secondCtrl.js
+    │   │   └── directives
+    │   │       └── firstDir.js
+    │   ├── dashboard
+    │   │   ├── controllers
+    │   │   |    └── firstCtrl.js
+    │   │   ├── directives
+    │   │   |    └── firstDir.js
+    │   │   ├── services
+    │   │   │   └── dirstSvc.js
+    │   │   └── filters
+    │   │       └── firstFilt.js
+    │   ├── benefits
+    │   │   ├── controllers
+    │   │   |    └── firstCtrl.js
+    │   │   ├── directives
+    │   │   |    └── firstDir.js
+    │   │   ├── services
+    │   │   │   └── dirstSvc.js
+    │   │   └── filters
+    │   │       └── firstFilt.js
+    │   ├── assets
+    │   │   ├── images
+    │   │   |    └── applicatio-specific-images.js
+    │   │   ├── styles
+    │   │   |    └── css-style-sheets.js
+    │   │   ├── scripts
+    │   │   |    └── other-script-files.js
+    │   │   └── libs
+    │   │   |    └── external-library.js
+    │   └── etc...
+    ├── bower_components
+    └── test
+        ├── common
+        ├── benefits
+        └── dashboard
+    ```
+
+### Overall Guidelines
+  - Organize files first by major feature, then by file type.
+
+  - Common/shared files for the app should go into “common”.
+
+  - Each feature folder will have subfolders for different file types
+      controllers
+      models
+      directives
+      services
+      views
+
+  - Images, CSS, and other JS libraries go under “assets”
+
+  - Unit test files go into the same folder as their target. Unit test files should have “.spec.” in their file names
+  
+  - File naming:
+      Directory names should be all lower case - in case the directory name contains multiple words, use lisp-case syntax. Example: secure-messaging.
+      See [Naming Guidelines](#naming) to understnad how file naming and angular component naming should be handled.
+
+### Folders-by-Feature Structure
+
+  - Create folders named for the feature they represent. When a folder grows to contain more than 7 files, start to consider creating a folder for them. 
+
+    *Why?*: A developer can locate the code, identify what each file represents at a glance, the structure is flat as can be, and there is no repetitive nor redundant names.
+
+    *Why?*: Helps reduce the app from becoming cluttered through organizing the content and keeping them aligned with the guidelines.
+
+    *Why?*: When there are a lot of files (10+) locating them is easier with a consistent folder structures and more difficult in flat structures.
+
+    Note: Do not use structuring using folders-by-type. This requires moving to multiple folders when working on a feature and gets unwieldy quickly as the app grows to 5, 10 or 25+ views and controllers (and other features), which makes it more difficult than folder-by-feature to locate files.
+
+## Naming
+
+### Naming Guidelines
+
+  - Organize files first by major feature, then by file type.
+    * the file path (`app\benefits\medicalCtrl.js`)
+    * the registered component name with Angular (`MedicalController` for controller components)
+
+    *Why?*: Naming conventions help provide a consistent way to find content at a glance. Consistency within the project is vital. Consistency with a team is important. Consistency across a company provides tremendous efficiency.
+
+    *Why?*: The naming conventions should simply help you find your code faster and make it easier to understand.
+
+### Feature File Names
+
+  - Use consistent names for all components following a pattern that describes the component's feature then (optionally) its type. 
+    * Append 'Ctrl' suffix for cotnroller file name
+    * Append 'Svc' suffix for data services that are using factory components. Excempt to this, if service or factory is used to define common feature in the application (ex: session handler, cookie helper etc...)
+    * Append 'Dir' suffix for any directive defined in the application.
+    * Append 'Filt' suffix for any filter defined in the application.
+    * Append 'Module' suffix for any module definition in the application.
+    * Append 'Config' suffix for any configuration initialization for given module in the application. ex: moduleNameConfig.js -> for app module appConfig.js
+    * Append 'Const' suffix for any constant definitions in module. ex: moduleNameConst.js -> for app module appConst.js
+
+
+    *Why?*: Provides a consistent way to quickly identify components.
+
+    *Why?*: Provides pattern matching for any automated tasks.
+
+    ```javascript
+    /**
+     * recommended
+     */
+
+    // controllers
+    medicalCtrl.js
+    medicalCtrl.spec.js
+
+    // data service using factory component
+    dataSvc.js
+    dataSvc.spec.js
+
+    // filter
+    benefitFilt.js
+    benefitFilt.spec.js
+
+    // directives
+    modalDir.js
+    modalDir.spec.js
+
+    // module
+    adminModule.js
+
+    // module specific routes
+    appRoutes.js
+    appRoutes.spec.js
+
+    // module specific configuration
+    appConfig.js
+
+    // module specific constants
+    appConst.js
+    adminConst.js
+
+    ```
+
+### Test File Names
+
+  - Name test specifications similar to the component they test with a suffix of `spec`.
+
+    *Why?*: Provides a consistent way to quickly identify components.
+
+    *Why?*: Provides pattern matching for [karma](http://karma-runner.github.io/) or other test runners.
+
+    ```javascript
+    /**
+     * recommended
+     */
+    medicalCtrl.spec.js
+    loggerSvc.spec.js
+    appRoutes.spec.js
+    modalDir.spec.js
+    ```
+
+### Controller Names
+
+  - Use consistent names for all controllers named after their feature. Use UpperCamelCase for controllers, as they are constructors.
+
+    *Why?*: Provides a consistent way to quickly identify and reference controllers.
+
+    *Why?*: UpperCamelCase is conventional for identifying object that can be instantiated using a constructor.
+
+    ```javascript
+    /**
+     * recommended
+     */
+
+    // medicalCtrl.js
+    'use strict';
+    define(['app'], function (app) {
+
+        var injectParams = ['$scope',
+                            '$location',
+                            '$filter',
+                            '$window',
+                            '$timeout',
+                            'cookieHelper'];
+
+        var MedicalController = function ($scope,
+                                       $location,
+                                       $filter,
+                                       $window,
+                                       $timeout,
+                                       cookieHelper) {
+                                         
+            var vm = this;
+            init();
+
+            function init() {
+            }
+
+
+        };
+
+        MedicalController.$inject = injectParams;
+        app.register.controller('MedicalCtrl', MedicalController);
+    });
+
+    ```
+
+### Controller Name Suffix
+
+  - Append the controller name with the suffix `Controller`.
+
+    *Why?*: The `Controller` suffix is more commonly used and is more explicitly descriptive.
+
+
+### Factory Names
+
+  - Use consistent names for all factories named after their feature. Use camel-casing for services and factories. Avoid prefixing factories and services with `$`.
+
+  - Use Factories for data service and http interceptor definitions.
+
+    *Why?*: Provides a consistent way to quickly identify and reference factories.
+
+    *Why?*: Avoids name collisions with built-in factories and services that use the `$` prefix.
+
+    ```javascript
+    /**
+     * recommended for data services
+     */
+
+    // claimSvc.js
+    'use strict';
+    define(['app'], function (app) {
+
+      var injectParams = ['$q',
+                          '$location',
+                          '$localStorage'];
+
+      var claimService = function ($q,
+                                    $location,
+                                    $localStorage) {
+        var factory = {
+          getClaimSummary: getClaimSummary,
+          getClaimDetails: getClaimDetails
+        };
+
+        function getClaimSummary() {
+        }
+
+        function getClaimDetails() {
+        }
+      };
+
+      claimService.$inject = injectParams;
+
+      app.factory('claimService', claimService);
+
+    });
+    ```
+
+### Service Names
+
+  - Use angular service for common feature components. Ex: cookie helper, session helper
+
+    ```javascript
+    /**
+     * services are recommended for common feature components
+     * Ex: session helper, cookie helper
+     * Below example is for cookie helper component
+     */
+
+    // cookieHlpr.js
+    'use strict';
+    define(['app'], function (app) {
+
+      var injectParams = ['$q',
+                          '$location',
+                          '$localStorage'];
+
+      var cookieHelper = function ($q,
+                                    $location,
+                                    $localStorage) {
+        this.getValue = function(){
+          ////////
+        };
+
+        this.setValue = function(){
+          ////////
+        };
+
+        function internalFunction1() {
+        }
+
+        function internalFunction2() {
+        }
+      };
+
+      cookieHelper.$inject = injectParams;
+
+      app.service('cookieHelper', cookieHelper);
+
+    });
+
+    ```
+
+### Directive Component Names
+
+  - Use consistent names for all directives using camel-case. Use a short prefix to describe the area that the directives belong (use "tcp" prefix for consumer portal directive components).
+
+    *Why?*: Provides a consistent way to quickly identify and reference components.
+
+    ```javascript
+    /**
+     * recommended
+     */
+
+    // ajaxLoadingDir.js
+    ﻿'use strict';
+
+    define(['app'], function (app) {
+
+        var injectParams = ['$q',
+                            '$parse',
+                            '$location',
+                            '$filter',
+                            '$window',
+                            '$timeout',
+                            'ajaxInterceptor'];
+
+        var ajaxLoadingDir = function ($q,
+                                       $parse,
+                                       $location,
+                                       $filter,
+                                       $window,
+                                       $timeout,
+                                       ajaxInterceptor) {
+            return {
+                restrict: 'AEC',
+                templateUrl: 'common/views/ajaxLoading.html',
+                scope: {
+                },
+                link: function (scope, element, attrs, controllers) {
+                    scope.queue = [];
+                    init();
+
+                    function init() {
+                        wireUpAjaxInterceptor();
+                    }
+                    function wireUpAjaxInterceptor() {
+                    }
+                }
+            };
+        };
+
+        ajaxLoadingDir.$inject = injectParams;
+
+        //'tcp' prefix used for component naming only.
+        app.directive('tcpAjaxLoadingDir', ajaxLoadingDir);
+        //below register can be used if directive is registered after angular.bootstrap
+        //app.register.directive('tcpAjaxLoading', ajaxLoading);
+
+    });
+
+    ```
+
+### Filter Component Names
+
+- Use 'Filter' suffix for component name.
+
+    ```javascript
+    ﻿'use strict';
+    define(['app'], function (app) {
+
+      var claimTypeFilter = function () {
+
+          return function (value) {
+              var result = "Unknown";
+              switch (value) {
+                  case -1:
+                      result = "View All"; break;
+                  case 1:
+                      result = "Medical"; break;
+                  case 2:
+                      result = "Pharmacy"; break;
+                  case 0:
+                      result = "Dental"; break;
+                  case 3:
+                      result = "Vision"; break;
+
+              }
+              return result;
+          };
+      };
+
+      app.register.filter('claimTypeFilter', claimTypeFilter);
+    });
+
+    ```
+
+### Modules
+
+  - When there are multiple modules, the main module file is named `app.js` while other dependent modules are named after what they represent. For example, an admin module is named `adminModule.js`. The respective registered module names would be `app` and `admin`.
+
+    *Why?*: Provides consistency for multiple module apps, and for expanding to large applications.
+
+    *Why?*: Provides easy way to use task automation to load all module definitions first, then all other angular files (for bundling).
+
+### Configuration
+
+  - Separate configuration for a module into its own file named after the module. A configuration file for the main `app` module is named `appConfig.js`. A configuration for a module named `adminModule.js` is named `adminConfig.js`.
+
+    *Why?*: Separates configuration from module definition, components, and active code.
+
+    *Why?*: Provides an identifiable place to set configuration for a module.
+
+### Routes
+
+  - Separate route configuration into its own file. Examples will be `appRoutes.js` for the main module and `adminRoutes.js` for the `admin` module.
 
 ## AMD
 ### RequireJs Module Definition
@@ -1483,428 +1904,6 @@
         );
     }
     ```
-
-## Naming
-
-### Naming Guidelines
-
-  - Organize files first by major feature, then by file type.
-    * the file path (`app\benefits\medicalCtrl.js`)
-    * the registered component name with Angular (`MedicalController` for controller components)
-
-    *Why?*: Naming conventions help provide a consistent way to find content at a glance. Consistency within the project is vital. Consistency with a team is important. Consistency across a company provides tremendous efficiency.
-
-    *Why?*: The naming conventions should simply help you find your code faster and make it easier to understand.
-
-### Feature File Names
-
-  - Use consistent names for all components following a pattern that describes the component's feature then (optionally) its type. 
-    * Append 'Ctrl' suffix for cotnroller file name
-    * Append 'Svc' suffix for data services that are using factory components. Excempt to this, if service or factory is used to define common feature in the application (ex: session handler, cookie helper etc...)
-    * Append 'Dir' suffix for any directive defined in the application.
-    * Append 'Filt' suffix for any filter defined in the application.
-    * Append 'Module' suffix for any module definition in the application.
-    * Append 'Config' suffix for any configuration initialization for given module in the application. ex: moduleNameConfig.js -> for app module appConfig.js
-    * Append 'Const' suffix for any constant definitions in module. ex: moduleNameConst.js -> for app module appConst.js
-
-
-    *Why?*: Provides a consistent way to quickly identify components.
-
-    *Why?*: Provides pattern matching for any automated tasks.
-
-    ```javascript
-    /**
-     * recommended
-     */
-
-    // controllers
-    medicalCtrl.js
-    medicalCtrl.spec.js
-
-    // data service using factory component
-    dataSvc.js
-    dataSvc.spec.js
-
-    // filter
-    benefitFilt.js
-    benefitFilt.spec.js
-
-    // directives
-    modalDir.js
-    modalDir.spec.js
-
-    // module
-    adminModule.js
-
-    // module specific routes
-    appRoutes.js
-    appRoutes.spec.js
-
-    // module specific configuration
-    appConfig.js
-
-    // module specific constants
-    appConst.js
-    adminConst.js
-
-    ```
-
-### Test File Names
-
-  - Name test specifications similar to the component they test with a suffix of `spec`.
-
-    *Why?*: Provides a consistent way to quickly identify components.
-
-    *Why?*: Provides pattern matching for [karma](http://karma-runner.github.io/) or other test runners.
-
-    ```javascript
-    /**
-     * recommended
-     */
-    medicalCtrl.spec.js
-    loggerSvc.spec.js
-    appRoutes.spec.js
-    modalDir.spec.js
-    ```
-
-### Controller Names
-
-  - Use consistent names for all controllers named after their feature. Use UpperCamelCase for controllers, as they are constructors.
-
-    *Why?*: Provides a consistent way to quickly identify and reference controllers.
-
-    *Why?*: UpperCamelCase is conventional for identifying object that can be instantiated using a constructor.
-
-    ```javascript
-    /**
-     * recommended
-     */
-
-    // medicalCtrl.js
-    'use strict';
-    define(['app'], function (app) {
-
-        var injectParams = ['$scope',
-                            '$location',
-                            '$filter',
-                            '$window',
-                            '$timeout',
-                            'cookieHelper'];
-
-        var MedicalController = function ($scope,
-                                       $location,
-                                       $filter,
-                                       $window,
-                                       $timeout,
-                                       cookieHelper) {
-                                         
-            var vm = this;
-            init();
-
-            function init() {
-            }
-
-
-        };
-
-        MedicalController.$inject = injectParams;
-        app.register.controller('MedicalCtrl', MedicalController);
-    });
-
-    ```
-
-### Controller Name Suffix
-
-  - Append the controller name with the suffix `Controller`.
-
-    *Why?*: The `Controller` suffix is more commonly used and is more explicitly descriptive.
-
-
-### Factory Names
-
-  - Use consistent names for all factories named after their feature. Use camel-casing for services and factories. Avoid prefixing factories and services with `$`.
-
-  - Use Factories for data service and http interceptor definitions.
-
-    *Why?*: Provides a consistent way to quickly identify and reference factories.
-
-    *Why?*: Avoids name collisions with built-in factories and services that use the `$` prefix.
-
-    ```javascript
-    /**
-     * recommended for data services
-     */
-
-    // claimSvc.js
-    'use strict';
-    define(['app'], function (app) {
-
-      var injectParams = ['$q',
-                          '$location',
-                          '$localStorage'];
-
-      var claimService = function ($q,
-                                    $location,
-                                    $localStorage) {
-        var factory = {
-          getClaimSummary: getClaimSummary,
-          getClaimDetails: getClaimDetails
-        };
-
-        function getClaimSummary() {
-        }
-
-        function getClaimDetails() {
-        }
-      };
-
-      claimService.$inject = injectParams;
-
-      app.factory('claimService', claimService);
-
-    });
-    ```
-
-### Service Names
-
-  - Use angular service for common feature components. Ex: cookie helper, session helper
-
-    ```javascript
-    /**
-     * services are recommended for common feature components
-     * Ex: session helper, cookie helper
-     * Below example is for cookie helper component
-     */
-
-    // cookieHlpr.js
-    'use strict';
-    define(['app'], function (app) {
-
-      var injectParams = ['$q',
-                          '$location',
-                          '$localStorage'];
-
-      var cookieHelper = function ($q,
-                                    $location,
-                                    $localStorage) {
-        this.getValue = function(){
-          ////////
-        };
-
-        this.setValue = function(){
-          ////////
-        };
-
-        function internalFunction1() {
-        }
-
-        function internalFunction2() {
-        }
-      };
-
-      cookieHelper.$inject = injectParams;
-
-      app.service('cookieHelper', cookieHelper);
-
-    });
-
-    ```
-
-### Directive Component Names
-
-  - Use consistent names for all directives using camel-case. Use a short prefix to describe the area that the directives belong (use "tcp" prefix for consumer portal directive components).
-
-    *Why?*: Provides a consistent way to quickly identify and reference components.
-
-    ```javascript
-    /**
-     * recommended
-     */
-
-    // ajaxLoadingDir.js
-    ﻿'use strict';
-
-    define(['app'], function (app) {
-
-        var injectParams = ['$q',
-                            '$parse',
-                            '$location',
-                            '$filter',
-                            '$window',
-                            '$timeout',
-                            'ajaxInterceptor'];
-
-        var ajaxLoadingDir = function ($q,
-                                       $parse,
-                                       $location,
-                                       $filter,
-                                       $window,
-                                       $timeout,
-                                       ajaxInterceptor) {
-            return {
-                restrict: 'AEC',
-                templateUrl: 'common/views/ajaxLoading.html',
-                scope: {
-                },
-                link: function (scope, element, attrs, controllers) {
-                    scope.queue = [];
-                    init();
-
-                    function init() {
-                        wireUpAjaxInterceptor();
-                    }
-                    function wireUpAjaxInterceptor() {
-                    }
-                }
-            };
-        };
-
-        ajaxLoadingDir.$inject = injectParams;
-
-        //'tcp' prefix used for component naming only.
-        app.directive('tcpAjaxLoadingDir', ajaxLoadingDir);
-        //below register can be used if directive is registered after angular.bootstrap
-        //app.register.directive('tcpAjaxLoading', ajaxLoading);
-
-    });
-
-    ```
-
-### Filter Component Names
-
-- Use 'Filter' suffix for component name.
-
-    ```javascript
-    ﻿'use strict';
-    define(['app'], function (app) {
-
-      var claimTypeFilter = function () {
-
-          return function (value) {
-              var result = "Unknown";
-              switch (value) {
-                  case -1:
-                      result = "View All"; break;
-                  case 1:
-                      result = "Medical"; break;
-                  case 2:
-                      result = "Pharmacy"; break;
-                  case 0:
-                      result = "Dental"; break;
-                  case 3:
-                      result = "Vision"; break;
-
-              }
-              return result;
-          };
-      };
-
-      app.register.filter('claimTypeFilter', claimTypeFilter);
-    });
-
-    ```
-
-### Modules
-
-  - When there are multiple modules, the main module file is named `app.js` while other dependent modules are named after what they represent. For example, an admin module is named `adminModule.js`. The respective registered module names would be `app` and `admin`.
-
-    *Why?*: Provides consistency for multiple module apps, and for expanding to large applications.
-
-    *Why?*: Provides easy way to use task automation to load all module definitions first, then all other angular files (for bundling).
-
-### Configuration
-
-  - Separate configuration for a module into its own file named after the module. A configuration file for the main `app` module is named `appConfig.js`. A configuration for a module named `adminModule.js` is named `adminConfig.js`.
-
-    *Why?*: Separates configuration from module definition, components, and active code.
-
-    *Why?*: Provides an identifiable place to set configuration for a module.
-
-### Routes
-
-  - Separate route configuration into its own file. Examples will be `appRoutes.js` for the main module and `adminRoutes.js` for the `admin` module.
-
-
-## Application Structure
-
-### Directory Structure
-
-    ```
-    .
-    ├── app
-    │   ├── app.js
-    │   ├── common
-    │   │   ├── controllers
-    │   │   │   ├── firstCtrl.js
-    │   │   │   └── secondCtrl.js
-    │   │   └── directives
-    │   │       └── firstDir.js
-    │   ├── dashboard
-    │   │   ├── controllers
-    │   │   |    └── firstCtrl.js
-    │   │   ├── directives
-    │   │   |    └── firstDir.js
-    │   │   ├── services
-    │   │   │   └── dirstSvc.js
-    │   │   └── filters
-    │   │       └── firstFilt.js
-    │   ├── benefits
-    │   │   ├── controllers
-    │   │   |    └── firstCtrl.js
-    │   │   ├── directives
-    │   │   |    └── firstDir.js
-    │   │   ├── services
-    │   │   │   └── dirstSvc.js
-    │   │   └── filters
-    │   │       └── firstFilt.js
-    │   ├── assets
-    │   │   ├── images
-    │   │   |    └── applicatio-specific-images.js
-    │   │   ├── styles
-    │   │   |    └── css-style-sheets.js
-    │   │   ├── scripts
-    │   │   |    └── other-script-files.js
-    │   │   └── libs
-    │   │   |    └── external-library.js
-    │   └── etc...
-    ├── bower_components
-    └── test
-        ├── common
-        ├── benefits
-        └── dashboard
-    ```
-
-### Overall Guidelines
-  - Organize files first by major feature, then by file type.
-
-  - Common/shared files for the app should go into “common”.
-
-  - Each feature folder will have subfolders for different file types
-      controllers
-      models
-      directives
-      services
-      views
-
-  - Images, CSS, and other JS libraries go under “assets”
-
-  - Unit test files go into the same folder as their target. Unit test files should have “.spec.” in their file names
-  
-  - File naming:
-      Directory names should be all lower case - in case the directory name contains multiple words, use lisp-case syntax. Example: secure-messaging.
-      See [Naming Guidelines](#naming) to understnad how file naming and angular component naming should be handled.
-
-### Folders-by-Feature Structure
-
-  - Create folders named for the feature they represent. When a folder grows to contain more than 7 files, start to consider creating a folder for them. 
-
-    *Why?*: A developer can locate the code, identify what each file represents at a glance, the structure is flat as can be, and there is no repetitive nor redundant names.
-
-    *Why?*: Helps reduce the app from becoming cluttered through organizing the content and keeping them aligned with the guidelines.
-
-    *Why?*: When there are a lot of files (10+) locating them is easier with a consistent folder structures and more difficult in flat structures.
-
-    Note: Do not use structuring using folders-by-type. This requires moving to multiple folders when working on a feature and gets unwieldy quickly as the app grows to 5, 10 or 25+ views and controllers (and other features), which makes it more difficult than folder-by-feature to locate files.
 
 
 ## Modularity
