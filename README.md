@@ -264,6 +264,7 @@
 
       app.register.controller('SomeCtrl', SomeController);
   });
+  ```
 
 
 ### controllerAs with vm
