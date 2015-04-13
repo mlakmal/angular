@@ -165,9 +165,9 @@
 
     Note: Do not use structuring using folders-by-type. This requires moving to multiple folders when working on a feature and gets unwieldy quickly as the app grows to 5, 10 or 25+ views and controllers (and other features), which makes it more difficult than folder-by-feature to locate files.
 
-## Naming
+### Naming
 
-### Naming Guidelines
+#### Naming Guidelines
 
   - Organize files first by major feature, then by file type.
     * the file path (`app\benefits\medicalCtrl.js`)
@@ -177,7 +177,7 @@
 
     *Why?*: The naming conventions should simply help you find your code faster and make it easier to understand.
 
-### Feature File Names
+#### Feature File Names
 
   - Use consistent names for all components following a pattern that describes the component's feature then (optionally) its type. 
     * Append 'Ctrl' suffix for cotnroller file name
@@ -230,7 +230,7 @@
 
     ```
 
-### Test File Names
+#### Test File Names
 
   - Name test specifications similar to the component they test with a suffix of `spec`.
 
@@ -248,7 +248,7 @@
     modalDir.spec.js
     ```
 
-### Controller Names
+#### Controller Names
 
   - Use consistent names for all controllers named after their feature. Use UpperCamelCase for controllers, as they are constructors.
 
@@ -294,14 +294,14 @@
 
     ```
 
-### Controller Name Suffix
+#### Controller Name Suffix
 
   - Append the controller name with the suffix `Controller`.
 
     *Why?*: The `Controller` suffix is more commonly used and is more explicitly descriptive.
 
 
-### Factory Names
+#### Factory Names
 
   - Use consistent names for all factories named after their feature. Use camel-casing for services and factories. Avoid prefixing factories and services with `$`.
 
@@ -346,7 +346,7 @@
     });
     ```
 
-### Service Names
+#### Service Names
 
   - Use angular service for common feature components. Ex: cookie helper, session helper
 
@@ -391,7 +391,7 @@
 
     ```
 
-### Directive Component Names
+#### Directive Component Names
 
   - Use consistent names for all directives using camel-case. Use a short prefix to describe the area that the directives belong (use "tcp" prefix for consumer portal directive components).
 
@@ -451,7 +451,7 @@
 
     ```
 
-### Filter Component Names
+#### Filter Component Names
 
 - Use 'Filter' suffix for component name.
 
@@ -485,7 +485,7 @@
 
     ```
 
-### Modules
+#### Modules
 
   - When there are multiple modules, the main module file is named `app.js` while other dependent modules are named after what they represent. For example, an admin module is named `adminModule.js`. The respective registered module names would be `app` and `admin`.
 
@@ -493,7 +493,7 @@
 
     *Why?*: Provides easy way to use task automation to load all module definitions first, then all other angular files (for bundling).
 
-### Configuration
+#### Configuration
 
   - Separate configuration for a module into its own file named after the module. A configuration file for the main `app` module is named `appConfig.js`. A configuration for a module named `adminModule.js` is named `adminConfig.js`.
 
@@ -501,7 +501,7 @@
 
     *Why?*: Provides an identifiable place to set configuration for a module.
 
-### Routes
+#### Routes
 
   - Separate route configuration into its own file. Examples will be `appRoutes.js` for the main module and `adminRoutes.js` for the `admin` module.
 
