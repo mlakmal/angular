@@ -1688,21 +1688,30 @@ require(['common/services/routeResolver',
               var getRoutes = function () {
                   return [
                     {
+                        //angular route url
                         route: '/',
+                        //controller component name (not the file name, actual component name used for registering with angular module)
                         controllerName: 'MainCtrl',
+                        //requirejs component definition abbrevation defined in requirejs configuration "path" array
                         rjsMod: 'mainCtrl',
+                        //route template view url, which points to webcenter page
                         template: 'http://va10twpiss010:8081/cs/poc/home.html',
+                        //use of controller as feature in angular, refer previous guidelines on controller as specifics.
                         controllerAs: 'vm',
+                        //used when https is used for route
                         secure: false,
+                        //additional requirejs dependencies that needs to be loaded before route is initialized. above requirejs definition for controller will be added to this array internally.
                         dependencies: [],
                         requireAuth: false
                     },
                     ///////
 
                     {
+                        //use regex expression to identify common urls that can be served with same controller
                         route: '/consumer/:name',
                         controllerName: 'WcsCtrl',
                         rjsMod: 'wcsCtrl',
+                        //use tempalte function to handle multiple url's to be used with same controller. (ex: for webcenter specific cms pages that doesnt have any application logic)
                         template: function (urlattr) {
                             return 'http://va10twpiss010:8081/cs/poc/' + urlattr.name + '.html';
                         },
