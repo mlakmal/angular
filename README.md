@@ -505,7 +505,7 @@
 
 *Why?*: This helps modules to be loaded asynchrnously through requirejs. Helps to reduce the initial javascript file size loaded to the browser and to improve performance.
 
-#### RequireJs Module Definition
+#### RequireJS Module Definition
 
   - Wrap Angular components in an RequireJs module definition.
 
@@ -560,7 +560,7 @@
 
   ```
 
-#### RequireJs angular component with asynchrnous loading before angular.bootstrap executed.
+##### RequireJs angular component with asynchrnous loading before angular.bootstrap executed.
 
   - Use app.service, app.controller, app.directive, app.filter, app.factory etc to register the angular component with app module.
 
@@ -613,7 +613,7 @@
 
   ```
 
-#### RequireJs angular component registering with asynchrnous loading after angular.bootstrap executed.
+##### RequireJs angular component registering with asynchrnous loading after angular.bootstrap executed.
 
   - Use app.register.service, app.register.controller, app.register.directive, app.register.filter, app.register.factory etc to register the angular component with app module.
 
@@ -641,6 +641,127 @@
   });
 
   ```
+
+#### RequireJS Configuration
+
+- Before using RequireJS to load components asynchronously, we need to configure RequireJS to specify what all components are available in our application and how to get to those script files (so when requested to be loaded, it knows which url to use to load the script file in browser)
+
+- RequireJS configuration is defined in \app\core\requirejsConfig.js file. Following is the current(4/13/2015)  of that file.
+
+```javascript
+﻿//this allows loading only the required js files with initial application
+require.config({
+    baseUrl: '',
+    //build hash value used to browser cache busting. this value will be updated with build process. so don't make any changes to this value.
+    urlArgs: '@buildHash',
+    //specify the javascript file location with abbreviation. any angular component should be listed in below array to bve used with RequireJS.
+    paths: {
+        //abbrevation: "path to your angular component script file from app folder root, don't use js extension when giving path here"
+        'app': 'app',
+        'appCfg': 'core/appConfig',
+        'alDir': 'common/directives/ajaxLoadingDir',
+        'tpDir': 'common/directives/tooltipPopoverDir',
+        'cdDir': 'claims/directives/claimsDropdownDir',
+        'benefitSrvc': 'benefits/services/benefitsSrvc',
+        'providerSrvc': 'provider/services/providerSrvc',
+        'claimsSrvc': 'claims/services/claimsSrvc',
+        'userSrvc': 'register/userSrvc',
+        'bFilt': 'benefits/filters/benefitFltr',
+        'cFilt': 'claims/filters/claimsFltr',
+        'cpDir': 'benefits/directives/coveragePeriodDir',
+        'sDir': 'common/directives/sessionDir',
+        'tnDir': 'common/directives/topNavDir',
+        'clDir': 'claims/directives/claimsListDir',
+        'cHlpr': 'common/services/cookieHlpr',
+        'contSrvc': 'common/services/contentSrvc',
+        'msgSrvc': 'common/services/messageSrvc',
+        'msgDir': 'common/directives/contentMessageDir',
+        'mainCtrl': 'home/controllers/mainCtrl',
+        'loginCtrl': 'login/controllers/loginCtrl',
+        'regCtrl': 'register/registerCtrl',
+        'regDir': 'register/registerDir',
+        'dashCtrl': 'dashboard/controllers/dashboardCtrl',
+        'coCtrl': 'claims/controllers/claimsOverviewCtrl',
+        'medCtrl': 'benefits/controllers/medicalCtrl',
+        'authSrvc': 'login/services/authSrvc',
+        'authIntSrvc': 'common/services/httpInterceptor',
+        'modHlpr': 'common/services/modalHlpr',
+        'wtDir': 'common/directives/warnTimerDir',
+        'siHlpr': 'common/services/sessionIdleHlpr',
+        'wcsCtrl': 'common/controllers/wcsCtrl',
+        'cdeDir' : 'benefits/directives/coverageDetailsDir',
+        'doDir': 'benefits/directives/deductibleOopDir',
+        'welDir': 'dashboard/directives/welcomeToDir',
+        'pdDir': 'common/directives/pageHeadDataDir'
+    },
+    //if any of the above listed files have additional dependencies, they can be listed below.
+    shim: {
+        /* assume we have defined test1, test2, test3 components in above "path" array. 
+           and test1 has dependencies with test2 and test3, meaning test2 and test3 needs to loaded before loading test1 component.
+        'test1' : {
+          deps: ['test2', 'test3'],
+          exports: 'test1'
+        }
+        */
+        'dashCtrl': {
+            deps: ['clDir', 'msgDir','welDir'],
+            exports: 'dashCtrl'
+        },
+        'coCtrl': {
+            deps: ['clDir'],
+            exports: 'cOverCtrl'
+        },
+        'medCtrl': {
+            deps: ['benefitSrvc', 'cpDir', 'cdeDir', 'doDir'],
+            exports: 'medCtrl'
+        },
+        'regCtrl': {
+            deps: ['userSrvc', 'regDir'],
+            exports: 'regCtrl'
+        },
+        'clDir': {
+            deps: ['claimsSrvc', 'cFilt', 'cdDir'],
+            exports: 'clDir'
+        },
+        'cpDir': {
+            deps: ['bFilt', 'benefitSrvc', 'providerSrvc'],
+            exports: 'cpDir'
+        },
+        'cdeDir': {
+            deps: ['bFilt'],
+            exports: 'cdeDir'
+        },
+        'doDir': {
+            deps: ['bFilt'],
+            exports: 'doDir'
+        }
+    }
+});
+
+//bootstrap the angular app to load after initial require js modules are loaded for application start
+//don't include all the modules defined above in this, this should only specify the initial modules that are needed for startup the app.
+//modules listed below will be bundled to single js file while building the application for deployment.
+require(['common/services/routeResolver',
+          'app',
+          'appCfg',
+          'authIntSrvc',
+          'wtDir',
+          'modHlpr',
+          'siHlpr',
+          'alDir',
+          'tpDir',
+          'cHlpr',
+          'authSrvc',
+          'msgSrvc',
+          'sDir',
+          'tnDir',
+          'pdDir'
+    ], function () {
+        angular.bootstrap(document, ['anthemMemberPortal']);
+});
+
+```
+
 
 ## Angular Component Coding
 
@@ -959,6 +1080,48 @@
             .then(function(isOk) { vm.isCreditOk = isOk; })
             .catch(showServiceError);
       };
+  }
+  ```
+
+### Controller Initialization
+
+  - Resolve start-up logic for a controller in an `init` function.
+
+    *Why?*: Placing start-up logic in a consistent place in the controller makes it easier to locate, more consistent to test, and helps avoid spreading out the activation logic across the controller.
+
+    *Why?*: The controller `init` makes it convenient to re-use the logic for a refresh for the controller/View, keeps the logic together, gets the user to the View faster, makes animations easy on the `ng-view` or `ui-view`, and feels snappier to the user.
+
+  ```javascript
+  /* avoid */
+  var SomeController = function ($scope, dataservice) {
+      var vm = this;
+      vm.avengers = [];
+      vm.title = 'Avengers';
+
+      dataservice.getAvengers().then(function(data) {
+          vm.avengers = data;
+          return vm.avengers;
+      });
+  }
+  ```
+
+  ```javascript
+  /* recommended */
+  var SomeController = function ($scope, dataservice) {
+      var vm = this;
+      vm.avengers = [];
+      vm.title = 'Avengers';
+
+      init();
+
+      ////////////
+
+      function init() {
+          return dataservice.getAvengers().then(function(data) {
+              vm.avengers = data;
+              return vm.avengers;
+          });
+      }
   }
   ```
 
@@ -1458,60 +1621,19 @@
     Note: `bindToController` was introduced in Angular 1.3.0.
 
 
-## Resolving Promises for a Controller
-### Controller Activation Promises
+## Resolving Routes
 
-  - Resolve start-up logic for a controller in an `init` function.
+  - routeResolver module defined in the application framework will allow us to load controller file asynchronously and register it with the app module before initializing the route.
 
-    *Why?*: Placing start-up logic in a consistent place in the controller makes it easier to locate, more consistent to test, and helps avoid spreading out the activation logic across the controller.
-
-    *Why?*: The controller `init` makes it convenient to re-use the logic for a refresh for the controller/View, keeps the logic together, gets the user to the View faster, makes animations easy on the `ng-view` or `ui-view`, and feels snappier to the user.
-
-    Note: If you need to conditionally cancel the route before you start use the controller, use a [route resolve promises](#route-resolve-promises) instead.
-
-  ```javascript
-  /* avoid */
-  var SomeController = function ($scope, dataservice) {
-      var vm = this;
-      vm.avengers = [];
-      vm.title = 'Avengers';
-
-      dataservice.getAvengers().then(function(data) {
-          vm.avengers = data;
-          return vm.avengers;
-      });
-  }
-  ```
-
-  ```javascript
-  /* recommended */
-  var SomeController = function ($scope, dataservice) {
-      var vm = this;
-      vm.avengers = [];
-      vm.title = 'Avengers';
-
-      init();
-
-      ////////////
-
-      function init() {
-          return dataservice.getAvengers().then(function(data) {
-              vm.avengers = data;
-              return vm.avengers;
-          });
-      }
-  }
-  ```
-
-### Route Resolve Promises
-
-  - When a controller needs to be loaded asynchronously ,resolve that controller and it's other dependent components in the `$routeProvider` before the controller logic is executed. If you need to conditionally cancel a route before the controller is activated, use a route resolver.
+  - When a controller needs to be loaded asynchronously , RequireJS require feature is used to request the controller script file and load the the browser and it's other dependent components in the `$routeProvider` before the controller logic is executed. If you need to conditionally cancel a route before the controller is activated, use a route resolver.
 
   - Use a route resolve when you want to decide to cancel the route before ever transitioning to the View.
 
-    *Why?*: A route may need authentication and controller component and it's dependencies before it's initiated. That components may need to be loaded to the browser using AMD module or promise via a custom factory or [$http](https://docs.angularjs.org/api/ng/service/$http). Using a [route resolve](https://docs.angularjs.org/api/ngRoute/provider/$routeProvider) allows the promise to resolve before the controller logic executes, so it might take action based on that data from the promise.
+    *Why?*: A route may need authentication and controller component and it's dependencies before it's initiated. That components may need to be loaded to the browser using AMD module or promise via a custom factory using [$http](https://docs.angularjs.org/api/ng/service/$http). 
+    Using a [$routeProvider](https://docs.angularjs.org/api/ngRoute/provider/$routeProvider) allows the promise to resolve before the controller logic executes, so it might take action based on that data from the promise.
 
-    *Why?*: The code executes after the route and in the controller’s activate function. The View starts to load right away. Data binding kicks in when the activate promise resolves. A “busy” animation can be shown during the view transition (via `ng-view` or `ui-view`)
+    *Why?*: The code executes after the route and in the controller’s init function. The view starts to load right away. Data binding kicks in when the init function data service promise resolves. 
+
 
   ```javascript
   /* better */
@@ -1527,7 +1649,7 @@
           };
 
           this.route = function () {
-              //this will take route specific attributes and convert that into angular route definition to be used in routeProvider.when
+              //this will take route specific attributes and convert that into angular route definition to be used in "$routeProvider.when"
               var resolve = function (templateUrl, controllerName, controllerAs, secure, dependencies, requireAuth, rjsMod) {
                   var routeDef = {};
                   routeDef.templateUrl = templateUrl;
@@ -1535,8 +1657,12 @@
                   routeDef.controllerAs = controllerAs;
                   routeDef.secure = (secure) ? secure : false;
                   routeDef.requireAuth = requireAuth;
+                  // this is the route resolve function available in angular, that can be used to pre-load any scripts or data before route controller/view is initialized.
+                  // Current application will load the specific controller related to the route using this feature before initializing that controller and view.
                   routeDef.resolve = {
                       load: ['$q', '$rootScope', function ($q, $rootScope) {
+                          //rjsMod parameter contains the requirejs module name that needs to be loaded to browser.
+                          //we are adding that module into the dependecy array and ask RequireJS require function to load that script file.
                           dependencies.push(rjsMod);
                           return resolveDependencies($q, $rootScope, dependencies);
                       }]
@@ -1545,9 +1671,11 @@
                   return routeDef;
               },
 
-              //this will load the required scripts for route through RequireJs AMD loading. as part of this script file containing the controller class/component will be loaded before route definition is given to routeProvider.when
+              //this will load the required scripts for route through RequireJs AMD loading. 
+              //as part of this script file containing the controller class/component will be loaded before route definition is given to "$routeProvider.when"
               resolveDependencies = function ($q, $rootScope, dependencies) {
                   var defer = $q.defer();
+                  //RequireJS require function loads the module definitions, then resolve the route resolve function to init the controller and view for that route.
                   require(dependencies, function () {
                       defer.resolve();
                       $rootScope.$apply();
