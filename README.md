@@ -3,6 +3,7 @@
 ## Table of Contents
 
   1. [Application Structure](#application-structure)
+    1. [Single Responsibility](#single-responsibility)
   1. [Angular Component Coding](#angular-component-coding)
   1. [Resolving Promises for a Controller](#resolving-promises-for-a-controller)
   1. [Manual Annotating for Dependency Injection](#manual-annotating-for-dependency-injection)
