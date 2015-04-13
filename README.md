@@ -14,7 +14,7 @@
   1. [Manual Annotating for Dependency Injection](#manual-annotating-for-dependency-injection)
   1. [Minification and Annotation](#minification-and-annotation)
   1. [Exception Handling](#exception-handling)
-  1. [Naming](#naming)
+  1. [Naming Guidelines](#naming)
   1. [Application Structure](#application-structure)
   1. [Modularity](#modularity)
   1. [Startup Logic](#startup-logic)
@@ -921,7 +921,7 @@
 
   ```
 
-    Note: See the [Naming](#naming) section for more recommendations.
+    Note: See the [Naming Guidelines](#naming) section for more recommendations.
 
 ### Manipulate DOM in a Directive
 
@@ -1892,7 +1892,7 @@
   
   - File naming:
       Directory names should be all lower case - in case the directory name contains multiple words, use lisp-case syntax. Example: secure-messaging.
-      Name the file with the type name/abbreviation at the end for angular component files. Example: dashboardCtrl.js or dashboardSvc.js, dashboardDir.js. “View”, “Model” should be spelled out.
+      See [Naming Guidelines](#naming).
 
 ### Folders-by-Feature Structure
 
