@@ -4,6 +4,9 @@
 
   1. [Application Structure](#application-structure)
     1. [Single Responsibility](#single-responsibility)
+    1. [Directory Structure](#directory-structure)
+    1. [Overall Guidelines](#overall-guidelines)
+      1. [Folders-by-Feature Structure](#folder-by-feature-structure)
   1. [Angular Component Coding](#angular-component-coding)
   1. [Resolving Promises for a Controller](#resolving-promises-for-a-controller)
   1. [Manual Annotating for Dependency Injection](#manual-annotating-for-dependency-injection)
@@ -147,7 +150,7 @@
       Directory names should be all lower case - in case the directory name contains multiple words, use lisp-case syntax. Example: secure-messaging.
       See [Naming Guidelines](#naming) to understnad how file naming and angular component naming should be handled.
 
-### Folders-by-Feature Structure
+#### Folders-by-Feature Structure
 
   - Create folders named for the feature they represent. When a folder grows to contain more than 7 files, start to consider creating a folder for them. 
 
