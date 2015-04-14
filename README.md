@@ -57,13 +57,10 @@
     1. [Validating Coding Standards](#validating-coding-standards)
     1. [Validating Coding Styles](#validating-coding-styles)
   1. [File Templates and Snippets](#file-templates-and-snippets)
-  1. [Yeoman Generator](#yeoman-generator)
-  1. [Routing](#routing)
   1. [Task Automation](#task-automation)
   1. [Modularity](#modularity)
   1. [Angular Docs](#angular-docs)
-  1. [Contributing](#contributing)
-  1. [License](#license)
+  1. [References](#references)
 
 
 ## Application Structure
