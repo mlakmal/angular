@@ -19,7 +19,11 @@
         1. [Module Configuration Naming](#module-configuration-naming)
       1. [Routes Naming](#routes-naming)
     1. [Asynchronous Module Definition](#asynchronous-module-definition)
+      1. [RequireJS Module Definition](#requirejs-module-definition)
+      1. [RequireJS Configuration](#requirejs-configuration)
   1. [Angular Component Coding](#angular-component-coding)
+    1. [Modules](#modules)
+    1. [Controllers](#controllers)
   1. [Resolving Promises for a Controller](#resolving-promises-for-a-controller)
   1. [Manual Annotating for Dependency Injection](#manual-annotating-for-dependency-injection)
   1. [Minification and Annotation](#minification-and-annotation)
@@ -535,7 +539,7 @@
 
   - Separate route configuration into its own file. Examples will be `appRoutes.js` for the main module and `adminRoutes.js` for the `admin` module.
 
-### Asynchronous Module Definition (AMD)
+### Asynchronous Module Definition
 
 - We use RequireJS to load the angular components asynchronously when required.
 
@@ -596,8 +600,6 @@
 
   ```
 
-##### RequireJs angular component with asynchrnous loading before angular.bootstrap executed.
-
   - Use app.service, app.controller, app.directive, app.filter, app.factory etc to register the angular component with app module.
 
   - For requirejs components loaded with below statement.
@@ -648,8 +650,6 @@
   });
 
   ```
-
-##### RequireJs angular component registering with asynchrnous loading after angular.bootstrap executed.
 
   - Use app.register.service, app.register.controller, app.register.directive, app.register.filter, app.register.factory etc to register the angular component with app module.
 
@@ -803,7 +803,7 @@ require(['common/services/routeResolver',
 
 ### Modules
 
-#### Avoid Naming Collisions
+- Avoid Naming Collisions
 
   - Use unique naming conventions with separators for sub-modules.
 
@@ -818,7 +818,7 @@ require(['common/services/routeResolver',
 
 - Do not manipulate DOM in your controllers, this will make your controllers harder for testing and will violate the Separation of Concerns principle. Use directives instead.
 
-#### Use below Controller definition for new controller creation.
+- Use below Controller definition for new controller creation.
 
   ```javascript
   'use strict';
