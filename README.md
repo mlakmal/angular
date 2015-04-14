@@ -617,7 +617,9 @@
 
   ```
 
-  - Use app.service, app.controller, app.directive, app.filter, app.factory etc to register the angular component with app module.
+  - Use app.service, app.controller, app.directive, app.filter, app.factory etc to register the angular component with app module. 
+
+  - This method of component registering can be used before angular.bootstrap statement is exected.
 
   - For requirejs components loaded with below statement.
 
@@ -669,6 +671,8 @@
   ```
 
   - Use app.register.service, app.register.controller, app.register.directive, app.register.filter, app.register.factory etc to register the angular component with app module.
+
+  - This method of component registering can be used after angular.bootstrap statement is exected.
 
   ```javascript
   /**
