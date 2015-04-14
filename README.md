@@ -24,6 +24,12 @@
   1. [Angular Component Coding](#angular-component-coding)
     1. [Modules](#modules)
     1. [Controllers](#controllers)
+      1. [Using vm with controllerAs](#controlleras-with-vm)
+      1. [Bindable Members and Functions](#bindable-members-up-top)
+        1. [Function Usage in Controllers](#function-usage-in-controllers)
+      1. [Services and Controller Logic](#services-and-controller-logic)
+      1. [Controller Initialization](#controller-initialization)
+      1. [Controllers with Routes](#controllers-with-routes)
   1. [Resolving Promises for a Controller](#resolving-promises-for-a-controller)
   1. [Manual Annotating for Dependency Injection](#manual-annotating-for-dependency-injection)
   1. [Minification and Annotation](#minification-and-annotation)
@@ -811,7 +817,12 @@ require(['common/services/routeResolver',
 
   - Use unique naming conventions with prefix for directive definitions.
 
-  *Why?*: Allow to share the directives with other teams and projects.
+  *Why?*: Allow to share the directives with other teams and projects.  
+
+  - Define a controller for a view, and try not to reuse the controller for other views. Instead, move reusable logic to factories and keep the controller simple and focused on its view.
+  - Exception for this would be webcenter specific pages that doesn't have any controller logic and will purely be used as cms page.
+
+    *Why?*: Reusing controllers with several views is brittle and good end to end (e2e) test coverage is required to ensure stability across large applications.
 
 
 ### Controllers
@@ -846,7 +857,7 @@ require(['common/services/routeResolver',
   ```
 
 
-#### controllerAs with vm
+#### Using vm with controllerAs
 
   - Use a capture variable for `this` when using the `controllerAs` syntax. Choose a consistent variable name such as `vm`, which stands for ViewModel.
 
@@ -900,7 +911,7 @@ require(['common/services/routeResolver',
   };
   ```
 
-#### Bindable Members Up Top
+#### Bindable Members and Functions
 
   - Place bindable members at the top of the controller, alphabetized, and not spread through the controller code.
 
@@ -986,7 +997,7 @@ require(['common/services/routeResolver',
       vm.title = 'Sessions';
   ```
 
-#### Function Declarations to Hide Implementation Details
+##### Function Usage in Controllers
 
   - Use function declarations to hide implementation details. Keep your bindable members up top. When you need to bind a function in a controller, point it to a function declaration that appears later in the file. This is tied directly to the section Bindable Members Up Top. For more details see [this post](http://www.johnpapa.net/angular-function-declarations-function-expressions-and-readable-code).
 
@@ -1060,7 +1071,7 @@ require(['common/services/routeResolver',
   }
   ```
 
-#### Defer Controller Logic to Services
+#### Services and Controller Logic
 
   - Defer logic in a controller by delegating to services and factories.
 
@@ -1161,14 +1172,7 @@ require(['common/services/routeResolver',
   }
   ```
 
-#### Keep Controllers Focused
-
-  - Define a controller for a view, and try not to reuse the controller for other views. Instead, move reusable logic to factories and keep the controller simple and focused on its view.
-  - Exception for this would be webcenter specific pages that doesn't have any controller logic and will purely be used as cms page.
-
-    *Why?*: Reusing controllers with several views is brittle and good end to end (e2e) test coverage is required to ensure stability across large applications.
-
-#### Assigning Controllers
+#### Controllers with Routes
 
   - When a controller must be paired with a view and either component may be re-used by other controllers or views, define controllers along with their routes.
 
