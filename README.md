@@ -47,7 +47,7 @@
   1. [Exception Handling](#exception-handling)
     1. [Angular Specific Exceptions](#angular-specific-exceptions)
     1. [Global Exceptions](#global-exceptions)
-    1. [Routing Specific Exceptions](#routing-specific-exceptions)
+    1. [Routing Specific Errors](#routing-specific-exceptions)
   1. [Angular $ Wrapper Services](#angular--wrapper-services)
   1. [Testing](#testing)
   1. [Animations](#animations)
@@ -1708,6 +1708,36 @@ require(['common/services/routeResolver',
     });
     ```
 
+### Constants
+
+  - Create an Angular Constant for vendor libraries' global variables.
+
+    *Why?*: Provides a way to inject vendor libraries that otherwise are globals. This improves code testability by allowing you to more easily know what the dependencies of your components are (avoids leaky abstractions). It also allows you to mock these dependencies, where it makes sense.
+
+  - Use constants for values that do not change and do not come from another service. When constants are used only for a module that may be reused in multiple applications, place constants in a file per module named after the module. Until this is required, keep constants in the main module in a `appConst.js` file.
+
+    *Why?*: A value that may change, even infrequently, should be retrieved from a service so you do not have to change the source code. For example, a url for a data service could be placed in a constants but a better place would be to load it from a web service.
+
+    *Why?*: Constants can be injected into any angular component, including providers.
+
+    *Why?*: When an application is separated into modules that may be reused in other applications, each stand-alone module should be able to operate on its own including any dependent constants.
+
+    ```javascript
+    // appConst.js
+    ﻿'use strict';
+    define(['app'], function (app) {
+
+        /* global 3rd party libraries */
+        app.constant('toastr', toastr)
+            .constant('moment', moment);
+
+        // application constants
+        app.constant('events', {
+            ORDER_CREATED: 'event_order_created',
+            INVENTORY_DEPLETED: 'event_inventory_depleted'
+        });
+    });
+    ```
 
 ## Resolving Routes
 
@@ -2134,13 +2164,9 @@ require(['common/services/routeResolver',
 
 ## Angular $ Wrapper Services
 
-### $document and $window
-
   - Use [`$document`](https://docs.angularjs.org/api/ng/service/$document) and [`$window`](https://docs.angularjs.org/api/ng/service/$window) instead of `document` and `window`.
 
     *Why?*: These services are wrapped by Angular and more easily testable than using document and window in tests. This helps you avoid having to mock document and window yourself.
-
-### $timeout and $interval
 
   - Use [`$timeout`](https://docs.angularjs.org/api/ng/service/$timeout) and [`$interval`](https://docs.angularjs.org/api/ng/service/$interval) instead of `setTimeout` and `setInterval` .
 
@@ -2148,7 +2174,7 @@ require(['common/services/routeResolver',
 
 
 ## Testing
-Unit testing helps maintain clean code, as such I included some of my recommendations for unit testing foundations with links for more information.
+Unit testing helps maintain clean code.
 
 ### Write Tests with Stories
 
@@ -2176,13 +2202,9 @@ Unit testing helps maintain clean code, as such I included some of my recommenda
     // and so on
     ```
 
-### Testing Library
-
   - Use [Jasmine](http://jasmine.github.io/) for unit testing.
 
     *Why?*: Jasmine is widely used in the Angular community and stable, well maintained, and provide robust testing features.
-
-### Test Runner
 
   - Use [Karma](http://karma-runner.github.io) as a test runner.
 
@@ -2194,31 +2216,24 @@ Unit testing helps maintain clean code, as such I included some of my recommenda
 
     *Why?*: Karma works well with task automation leaders such as [Grunt](http://www.gruntjs.com) (with [grunt-karma](https://github.com/karma-runner/grunt-karma)) and [Gulp](http://www.gulpjs.com) (with [gulp-karma](https://github.com/lazd/gulp-karma)).
 
-### Stubbing and Spying
-
-  - Use [Sinon](http://sinonjs.org/) for stubbing and spying.
-
-    *Why?*: Sinon works well with both Jasmine and Mocha and extends the stubbing and spying features they offer.
-
-    *Why?*: Sinon makes it easier to toggle between Jasmine and Mocha, if you want to try both.
-
-    *Why?*: Sinon has descriptive messages when tests fail the assertions.
-
-### Headless Browser
-
   - Use [PhantomJS](http://phantomjs.org/) to run your tests on a server.
 
     *Why?*: PhantomJS is a headless browser that helps run your tests without needing a "visual" browser. So you do not have to install Chrome, Safari, IE, or other browsers on your server.
 
     Note: You should still test on all browsers in your environment, as appropriate for your target audience.
 
+  - Use [Sinon](http://sinonjs.org/) for stubbing and spying.
+
+    *Why?*: Sinon works well with Jasmine and extends the stubbing and spying features they offer.
+
+    *Why?*: Sinon has descriptive messages when tests fail the assertions.
+
+
 ### Code Analysis
 
   - Run JSHint on your tests.
 
     *Why?*: Tests are code. JSHint can help identify code quality issues that may cause the test to work improperly.
-
-### Alleviate Globals for JSHint Rules on Tests
 
   - Relax the rules on your test code to allow for common globals such as `describe` and `expect`. Relax the rules for expressions, as Mocha uses these.
 
@@ -2234,117 +2249,7 @@ Unit testing helps maintain clean code, as such I included some of my recommenda
     "mocha": true,
     ```
 
-### Organizing Tests (this may not be applicable to consumer portal since we will use seperate "test" folder to keep spec files.)
-
-  - Place unit test files (specs) side-by-side with your client code. Place specs that cover server integration or test multiple components in a separate `tests` folder.
-
-    *Why?*: Unit tests have a direct correlation to a specific component and file in source code.
-
-    *Why?*: It is easier to keep them up to date since they are always in sight. When coding whether you do TDD or test during development or test after development, the specs are side-by-side and never out of sight nor mind, and thus more likely to be maintained which also helps maintain code coverage.
-
-    *Why?*: When you update source code it is easier to go update the tests at the same time.
-
-    *Why?*: Placing them side-by-side makes it easy to find them and easy to move them with the source code if you move the source.
-
-    *Why?*: Having the spec nearby makes it easier for the source code reader to learn how the component is supposed to be used and to discover its known limitations.
-
-    *Why?*: Separating specs so they are not in a distributed build is easy with grunt or gulp.
-
-    ```
-    /src/client/app/customers/customer-detail.controller.js
-                             /customer-detail.controller.spec.js
-                             /customers.controller.spec.js
-                             /customers.controller-detail.spec.js
-                             /customers.module.js
-                             /customers.route.js
-                             /customers.route.spec.js
-    ```
-
-## Animations
-
-### Usage
-
-  - Use subtle [animations with Angular](https://docs.angularjs.org/guide/animations) to transition between states for views and primary visual elements. Include the [ngAnimate module](https://docs.angularjs.org/api/ngAnimate). The 3 keys are subtle, smooth, seamless.
-
-    *Why?*: Subtle animations can improve User Experience when used appropriately.
-
-    *Why?*: Subtle animations can improve perceived performance as views transition.
-
-### Sub Second
-
-  - Use short durations for animations. I generally start with 300ms and adjust until appropriate.
-
-    *Why?*: Long animations can have the reverse affect on User Experience and perceived performance by giving the appearance of a slow application.
-
-### animate.css
-
-  - Use [animate.css](http://daneden.github.io/animate.css/) for conventional animations.
-
-    *Why?*: The animations that animate.css provides are fast, smooth, and easy to add to your application.
-
-    *Why?*: Provides consistency in your animations.
-
-    *Why?*: animate.css is widely used and tested.
-
-    Note: See this [great post by Matias Niemelä on Angular animations](http://www.yearofmoo.com/2013/08/remastered-animation-in-angularjs-1-2.html)
-
-
-## Comments
-
-### jsDoc
-
-  - If planning to produce documentation, use [`jsDoc`](http://usejsdoc.org/) syntax to document function names, description, params and returns. Use `@namespace` and `@memberOf` to match your app structure.
-
-    *Why?*: You can generate (and regenerate) documentation from your code, instead of writing it from scratch.
-
-    *Why?*: Provides consistency using a common industry tool.
-
-    ```javascript
-    /**
-     * Logger Factory
-     * @namespace Factories
-     */
-    (function() {
-      angular
-          .module('app')
-          .factory('logger', logger);
-
-      /**
-       * @namespace Logger
-       * @desc Application wide logger
-       * @memberOf Factories
-       */
-      function logger($log) {
-          var service = {
-             logError: logError
-          };
-          return service;
-
-          ////////////
-
-          /**
-           * @name logError
-           * @desc Logs errors
-           * @param {String} msg Message to log
-           * @returns {String}
-           * @memberOf Factories.Logger
-           */
-          function logError(msg) {
-              var loggedMsg = 'Error: ' + msg;
-              $log.error(loggedMsg);
-              return loggedMsg;
-          };
-      }
-    })();
-    ```
-
-
-## JS Hint
-
-### Use an Options File
-###### [Style [Y230](#style-y230)]
-
-  - Use JS Hint for linting your JavaScript and be sure to customize the JS Hint options file and include in source control. See the [JS Hint docs](http://www.jshint.com/docs/) for details on the options.
+  - Be sure to customize the JS Hint options file and include in source control. See the [JS Hint docs](http://www.jshint.com/docs/) for details on the options.
 
     *Why?*: Provides a first alert prior to committing any code to source control.
 
@@ -2414,11 +2319,91 @@ Unit testing helps maintain clean code, as such I included some of my recommenda
     }
     ```
 
+### Organizing Test Files
 
-## JSCS
+  - Place unit test files (specs) side-by-side with your client code. Place specs that cover server integration or test multiple components in a separate `tests` folder.
 
-### Use an Options File
-###### [Style [Y235](#style-y235)]
+    *Why?*: Unit tests have a direct correlation to a specific component and file in source code.
+
+    *Why?*: It is easier to keep them up to date since they are always in sight. When coding whether you do TDD or test during development or test after development, the specs are side-by-side and never out of sight nor mind, and thus more likely to be maintained which also helps maintain code coverage.
+
+    *Why?*: When you update source code it is easier to go update the tests at the same time.
+
+    *Why?*: Placing them side-by-side makes it easy to find them and easy to move them with the source code if you move the source.
+
+    *Why?*: Having the spec nearby makes it easier for the source code reader to learn how the component is supposed to be used and to discover its known limitations.
+
+    *Why?*: Separating specs so they are not in a distributed build is easy with grunt or gulp.
+
+    ```
+    /app/customers/controllers/customerCtrl.js
+                             /controllers/customeCtrl.spec.js
+    ```
+
+## Animations
+
+  - Use subtle [animations with Angular](https://docs.angularjs.org/guide/animations) to transition between states for views and primary visual elements. Include the [ngAnimate module](https://docs.angularjs.org/api/ngAnimate). The 3 keys are subtle, smooth, seamless.
+
+    *Why?*: Subtle animations can improve User Experience when used appropriately.
+
+    *Why?*: Subtle animations can improve perceived performance as views transition.
+
+  - Use short durations for animations. I generally start with 300ms and adjust until appropriate.
+
+    *Why?*: Long animations can have the reverse affect on User Experience and perceived performance by giving the appearance of a slow application.
+
+  - Use [animate.css](http://daneden.github.io/animate.css/) for conventional animations.
+
+    *Why?*: The animations that animate.css provides are fast, smooth, and easy to add to your application.
+
+    *Why?*: Provides consistency in your animations.
+
+    *Why?*: animate.css is widely used and tested.
+
+    Note: See this [great post by Matias Niemelä on Angular animations](http://www.yearofmoo.com/2013/08/remastered-animation-in-angularjs-1-2.html)
+
+
+## Code Commenting
+
+  - Use [`jsDoc`](http://usejsdoc.org/) syntax to document function names, description, params and returns. Use `@namespace` and `@memberOf` to match your app structure.
+
+    *Why?*: You can generate (and regenerate) documentation from your code, instead of writing it from scratch.
+
+    *Why?*: Provides consistency using a common industry tool.
+
+    ```javascript
+    /**
+     * Claim Type Filter
+     * @namespace Filters
+     */
+     define(['app'], function (app) {
+
+        var claimTypeFilter = function () {
+
+            return function (value) {
+                var result = "Unknown";
+                switch (value) {
+                    case -1:
+                        result = "View All"; break;
+                    case 1:
+                        result = "Medical"; break;
+                    case 2:
+                        result = "Pharmacy"; break;
+                    case 0:
+                        result = "Dental"; break;
+                    case 3:
+                        result = "Vision"; break;
+
+                }
+                return result;
+            };
+        };
+
+        app.register.filter('claimTypeFilter', claimTypeFilter);
+    });
+    ```
+
+## Validate Coding Styles
 
   - Use JSCS for checking your coding styles your JavaScript and be sure to customize the JSCS options file and include in source control. See the [JSCS docs](http://www.jscs.info) for details on the options.
 
@@ -2502,50 +2487,6 @@ Unit testing helps maintain clean code, as such I included some of my recommenda
     ```
 
 
-## Constants
-
-### Vendor Globals
-
-  - Create an Angular Constant for vendor libraries' global variables.
-
-    *Why?*: Provides a way to inject vendor libraries that otherwise are globals. This improves code testability by allowing you to more easily know what the dependencies of your components are (avoids leaky abstractions). It also allows you to mock these dependencies, where it makes sense.
-
-    ```javascript
-    // constants.js
-
-    /* global toastr:false, moment:false */
-    (function() {
-        'use strict';
-
-        angular
-            .module('app.core')
-            .constant('toastr', toastr)
-            .constant('moment', moment);
-    })();
-    ```
-
-  - Use constants for values that do not change and do not come from another service. When constants are used only for a module that may be reused in multiple applications, place constants in a file per module named after the module. Until this is required, keep constants in the main module in a `constants.js` file.
-
-    *Why?*: A value that may change, even infrequently, should be retrieved from a service so you do not have to change the source code. For example, a url for a data service could be placed in a constants but a better place would be to load it from a web service.
-
-    *Why?*: Constants can be injected into any angular component, including providers.
-
-    *Why?*: When an application is separated into modules that may be reused in other applications, each stand-alone module should be able to operate on its own including any dependent constants.
-
-    ```javascript
-    // Constants used by the entire app
-    angular
-        .module('app.core')
-        .constant('moment', moment);
-
-    // Constants used only by the sales module
-    angular
-        .module('app.sales')
-        .constant('events', {
-            ORDER_CREATED: 'event_order_created',
-            INVENTORY_DEPLETED: 'event_inventory_depleted'
-        });
-    ```
 
 ## File Templates and Snippets
 Use file templates or snippets to help follow consistent styles and patterns. Here are templates and/or snippets for some of the web development editors and IDEs.
@@ -2844,9 +2785,6 @@ Use [Gulp](http://gulpjs.com) or [Grunt](http://gruntjs.com) for creating automa
     *Why?*: Intra-App features such as shared data services become easy to locate and share from within `app.core` (choose your favorite name for this module).
 
     > In a small app, you can also consider putting all the shared dependencies in the app module where the feature modules have no direct dependencies. This makes it easier to maintain the smaller application, but makes it harder to reuse modules outside of this application.
-
-
-**[Back to top](#table-of-contents)**
 
 ## Angular docs
 For anything else, API reference, check the [Angular documentation](//docs.angularjs.org/api).
