@@ -1,4 +1,4 @@
-# Consumer Portal Angular/Javascript Coding Standards
+# Consumer Portal Angular/JavaScript Coding Standards
 
 ## Table of Contents
 
@@ -58,7 +58,30 @@
     1. [Validate Coding Styles](#validate-coding-styles)
   1. [File Templates and Snippets](#file-templates-and-snippets)
   1. [Task Automation](#task-automation)
-  1. [Javascript Coding Standards](#javascript-coding-standards)
+  1. [JavaScript Coding Standards](#javascript-coding-standards)
+    1. [Types](#types)
+    1. [Objects](#objects)
+    1. [Arrays](#arrays)
+    1. [Strings](#strings)
+    1. [Functions](#functions)
+    1. [Properties](#properties)
+    1. [Variables](#variables)
+    1. [Hoisting](#hoisting)
+    1. [Comparison Operators & Equiality](#comparison-operators-&-equiality)
+    1. [Blocks](#blocks)
+    1. [Comments](#comments)
+    1. [Whitespace](#whitespace)
+    1. [Commas](#commas)
+    1. [Semicolons](#semicolons)
+    1. [Type Casting & Coercion](#type casting & coercion)
+    1. [Naming Conventions](#naming conventions)
+    1. [Accessors](#accessors)
+    1. [Constructors](#Constructors)
+    1. [Events](#events)
+    1. [Single Literal Object](#single-literal-object)
+    1. [jQuery](#jquery)
+    1. [ECMAScript 5 Compatibility](#ecmascript-5-compatibility)
+    1. [Performance](#performance)
   1. [Modularity](#modularity)
   1. [Angular Docs](#angular-docs)
   1. [References](#references)
@@ -2551,7 +2574,7 @@ Use [Grunt](http://gruntjs.com) for creating automated tasks.  Grunt leans to co
 
 - Add more details about Grunt to this section
 
-## Javascript Coding Standards
+## JavaScript Coding Standards
 
 ### Types
 
@@ -4057,3 +4080,5 @@ For anything else, API reference, check the [Angular documentation](//docs.angul
 [AngularJS Style Guides by John Papa](https://github.com/johnpapa/angular-styleguide)
 
 [Community Driven Best Practices for AngularJS](https://github.com/mgechev/angularjs-style-guide)
+
+[Javascript Style Guide by AirBnb](https://github.com/airbnb/javascript)
