@@ -18,7 +18,7 @@
       1. [Module Naming](#module-naming)
         1. [Module Configuration Naming](#module-configuration-naming)
       1. [Routes Naming](#routes-naming)
-    1. [Asynchronous Module Definition (AMD)](#asynchronous-module-definition)
+    1. [Asynchronous Module Definition](#asynchronous-module-definition)
   1. [Angular Component Coding](#angular-component-coding)
   1. [Resolving Promises for a Controller](#resolving-promises-for-a-controller)
   1. [Manual Annotating for Dependency Injection](#manual-annotating-for-dependency-injection)
