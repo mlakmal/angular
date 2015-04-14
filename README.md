@@ -6,7 +6,19 @@
     1. [Single Responsibility](#single-responsibility)
     1. [Directory Structure](#directory-structure)
     1. [Overall Guidelines](#overall-guidelines)
-      1. [Folders-by-Feature Structure](#folder-by-feature-structure)
+      1. [Folders by Feature Structure](#folders-by-feature-structure)
+    1. [Naming Guidelines](#naming-guidelines)
+      1. [File Names by Type](#file-name-by-type)
+      1. [Test File Naming](#test-file-naming)
+      1. [Controller Naming](#controller-naming)
+      1. [Factory Naming](#factory-naming)
+      1. [Service Naming](#service-naming)
+      1. [Directive Naming](#directive-naming)
+      1. [Filer Naming](#filter-naming)
+      1. [Module Naming](#module-naming)
+        1. [Module Configuration Naming](#module-configuration-naming)
+      1. [Routes Naming](#routes-naming)
+    1. [Asynchronous Module Definition (AMD)](#asynchronous-module-definition-(amd))
   1. [Angular Component Coding](#angular-component-coding)
   1. [Resolving Promises for a Controller](#resolving-promises-for-a-controller)
   1. [Manual Annotating for Dependency Injection](#manual-annotating-for-dependency-injection)
@@ -150,7 +162,7 @@
       Directory names should be all lower case - in case the directory name contains multiple words, use lisp-case syntax. Example: secure-messaging.
       See [Naming Guidelines](#naming) to understnad how file naming and angular component naming should be handled.
 
-#### Folders-by-Feature Structure
+#### Folders by Feature Structure
 
   - Create folders named for the feature they represent. When a folder grows to contain more than 7 files, start to consider creating a folder for them. 
 
@@ -172,7 +184,7 @@
 
     *Why?*: The naming conventions should simply help you find your code faster and make it easier to understand.
 
-#### Feature File Names
+#### File Names by Type
 
   - Use consistent names for all components following a pattern that describes the component's feature then (optionally) its type. 
     * Append 'Ctrl' suffix for cotnroller file name
