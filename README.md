@@ -30,6 +30,10 @@
       1. [Services and Controller Logic](#services-and-controller-logic)
       1. [Controller Initialization](#controller-initialization)
       1. [Controllers with Routes](#controllers-with-routes)
+    1. [Services](#services)
+    1. [Factories](#factories)
+      1. [Public Members and Functions](#public-members-and-functions)
+      1. [Function Declarations](#function-declarations)
   1. [Resolving Promises for a Controller](#resolving-promises-for-a-controller)
   1. [Manual Annotating for Dependency Injection](#manual-annotating-for-dependency-injection)
   1. [Minification and Annotation](#minification-and-annotation)
@@ -1230,8 +1234,6 @@ require(['common/services/routeResolver',
 
 ### Services
 
-#### Singletons
-
   - Services are instantiated with the `new` keyword, use `this` for public methods and variables.
 
     Note: [All Angular services are singletons](https://docs.angularjs.org/guide/services). This means that there is only one instance of a given service per injector.
@@ -1275,17 +1277,13 @@ require(['common/services/routeResolver',
 
 ### Factories
 
-#### Single Responsibility
-
   - Factories should have a [single responsibility](http://en.wikipedia.org/wiki/Single_responsibility_principle), that is encapsulated by its context. Once a factory begins to exceed that singular purpose, a new factory should be created.
-
-#### Singletons
 
   - Factories are singletons and return an object that contains the members of the service.
 
     Note: [All Angular services are singletons](https://docs.angularjs.org/guide/services).
 
-#### Accessible Members Up Top
+#### Public Members and Functions
 
   - Expose the callable members of the service (its interface) at the top, using a technique derived from the [Revealing Module Pattern](http://addyosmani.com/resources/essentialjsdesignpatterns/book/#revealingmodulepatternjavascript).
 
@@ -1349,7 +1347,7 @@ require(['common/services/routeResolver',
 
   ```
 
-#### Function Declarations to Hide Implementation Details
+#### Function Declarations
 
   - Use function declarations to hide implementation details. Keep your accessible members of the factory up top. Point those to function declarations that appears later in the file. For more details see [this post](http://www.johnpapa.net/angular-function-declarations-function-expressions-and-readable-code). Refer above factory code.
 
@@ -1364,9 +1362,7 @@ require(['common/services/routeResolver',
     *Why?*: Order is critical with function expressions
 
 
-### Data Services
-
-#### Separate Data Calls
+### REST API Wrapper Services
 
   - Refactor logic for making data operations and interacting with data to a factory. Make data services responsible for XHR calls, local storage, stashing in memory, or any other data operations.
 
@@ -1478,7 +1474,6 @@ require(['common/services/routeResolver',
   ```
 
 ### Directives
-#### Limit 1 Per File
 
   - Create one directive per file. Name the file for the directive.
 
@@ -1487,6 +1482,16 @@ require(['common/services/routeResolver',
     *Why?*: One directive per file is easy to maintain.
 
   - Name your directives with lowerCamelCase.
+
+  - Provide a short, unique and descriptive directive prefix such as `tcpSomeDir` which would be declared in HTML as `tcp-some-dir`.
+
+    *Why?*: The unique short prefix identifies the directive's context and origin. For example a prefix of `tcp-` may indicate that the directive is part of a consumer portal app.
+
+    Note: Avoid `ng-` as these are reserved for Angular directives. Research widely used directives to avoid naming conflicts, such as `ion-` for the [Ionic Framework](http://ionicframework.com/).
+
+  - When manipulating the DOM directly, use a directive. If alternative ways can be used such as using CSS to set styles or the [animation services](https://docs.angularjs.org/api/ngAnimate), Angular templating, [`ngShow`](https://docs.angularjs.org/api/ng/directive/ngShow) or [`ngHide`](https://docs.angularjs.org/api/ng/directive/ngHide), then use those instead. For example, if the directive simply hides and shows, use ngHide/ngShow.
+
+    *Why?*: DOM manipulation can be difficult to test, debug, and there are often better ways (e.g. CSS, animations, templates)
 
     > Note: "**Best Practice**: Directives should clean up after themselves. You can use `element.on('$destroy', ...)` or `scope.$on('$destroy', ...)` to run a clean-up function when the directive is removed" ... from the Angular documentation.
 
@@ -1547,21 +1552,7 @@ require(['common/services/routeResolver',
 
     Note: See the [Naming Guidelines](#naming) section for more recommendations.
 
-#### Manipulate DOM in a Directive
-
-  - When manipulating the DOM directly, use a directive. If alternative ways can be used such as using CSS to set styles or the [animation services](https://docs.angularjs.org/api/ngAnimate), Angular templating, [`ngShow`](https://docs.angularjs.org/api/ng/directive/ngShow) or [`ngHide`](https://docs.angularjs.org/api/ng/directive/ngHide), then use those instead. For example, if the directive simply hides and shows, use ngHide/ngShow.
-
-    *Why?*: DOM manipulation can be difficult to test, debug, and there are often better ways (e.g. CSS, animations, templates)
-
-#### Provide a Unique Directive Prefix
-
-  - Provide a short, unique and descriptive directive prefix such as `tcpSomeDir` which would be declared in HTML as `tcp-some-dir`.
-
-    *Why?*: The unique short prefix identifies the directive's context and origin. For example a prefix of `tcp-` may indicate that the directive is part of a consumer portal app.
-
-    Note: Avoid `ng-` as these are reserved for Angular directives. Research widely used directives to avoid naming conflicts, such as `ion-` for the [Ionic Framework](http://ionicframework.com/).
-
-#### Restrict to Elements and Attributes
+#### Directive Restrict Guidelines
 
   - When creating a directive that makes sense as a stand-alone element, allow restrict `E` (custom element) and optionally restrict `A` (custom attribute). Generally, if it could be its own control, `E` is appropriate. General guideline is allow `EA` but lean towards implementing as an element when it's stand-alone and as an attribute when it enhances its existing DOM element.
 
@@ -1582,7 +1573,7 @@ require(['common/services/routeResolver',
   <div my-calendar-range></div>
   ```
 
-#### Directives and ControllerAs
+#### Use of ControllerAs with Directive
 
   - Use `controller as` syntax with a directive to be consistent with using `controller as` with view and controller pairings.
 
@@ -1799,9 +1790,10 @@ require(['common/services/routeResolver',
 
   ```
 
-## Manual Annotating for Dependency Injection
+## Angular Dependency Injection
 
-### UnSafe from Minification
+### Manually Inject Dependencies
+
   - Avoid using the shortcut syntax of declaring dependencies without using a minification-safe approach.
 
     *Why?*: The parameters to the component (e.g. controller, factory, etc) will be converted to mangled variables. For example, `common` and `dataservice` may become `a` or `b` and not be found by Angular.
@@ -1828,8 +1820,6 @@ require(['common/services/routeResolver',
     d = function x(q,w,e,r,t,y){}
     a.register.controller('MainCtrl', d);
     ```
-
-### Manually Identify Dependencies
 
   - Use `$inject` to manually identify your dependencies for Angular components.
 
@@ -1876,9 +1866,7 @@ require(['common/services/routeResolver',
 
     Note: You can use same pattern like above to inject components to other class(s) like directives/factory/service/filters ...
 
-## Minification and Annotation
-
-### ng-annotate 
+## Use ngAnnonate to Inject Dependencies
 
   Note: below guide is not applicable if we use $inject in our code when defining injectable dependencies. described in previous section.
 
@@ -1936,7 +1924,7 @@ require(['common/services/routeResolver',
     > Note: Starting from Angular 1.3 you can use the [`ngApp`](https://docs.angularjs.org/api/ng/directive/ngApp) directive's `ngStrictDi` parameter to detect any potentially missing magnification safe dependencies. When present the injector will be created in "strict-di" mode causing the application to fail to invoke functions which do not use explicit function annotation (these may not be minification safe). Debugging info will be logged to the console to help track down the offending code. I prefer to only use `ng-strict-di` for debugging purposes only.
     `<body ng-app="APP" ng-strict-di>`
 
-### Use Gulp or Grunt for ng-annotate
+### Gulp Configuration for ngAnnonate
 
   - Use [gulp-ng-annotate](https://www.npmjs.org/package/gulp-ng-annotate) or [grunt-ng-annotate](https://www.npmjs.org/package/grunt-ng-annotate) in an automated build task. Inject `/* @ngInject */` prior to any function that has dependencies.
 
@@ -1960,7 +1948,7 @@ require(['common/services/routeResolver',
 
 ## Exception Handling
 
-### decorators
+### Angular Specific Exceptions
 
   - Use a [decorator](https://docs.angularjs.org/api/auto/service/$provide#decorator), at config time using the [`$provide`](https://docs.angularjs.org/api/auto/service/$provide) service, on the [`$exceptionHandler`](https://docs.angularjs.org/api/ng/service/$exceptionHandler) service to perform custom actions when exceptions occur.
 
@@ -1995,7 +1983,7 @@ require(['common/services/routeResolver',
     }
     ```
 
-### Exception Catchers
+### Global Exceptions
 
   - This will be built into core application framework, and listed in this guide for reference/usage in your contrllers/services/directives.
 
@@ -2036,7 +2024,7 @@ require(['common/services/routeResolver',
 
     ```
 
-### Route Errors
+### Routing Specific Errors
 
   - This will be built into core application framework, and listed in this guide for reference.
 
