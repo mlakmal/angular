@@ -50,11 +50,12 @@
     1. [Routing Specific Errors](#routing-specific-exceptions)
   1. [Angular $ Wrapper Services](#angular--wrapper-services)
   1. [Testing](#testing)
+    1. [Organizing Test Files](#organizing-test-files)
   1. [Animations](#animations)
-  1. [Comments](#comments)
-  1. [JSHint](#js-hint)
-  1. [JSCS](#jscs)
-  1. [Constants](#constants)
+  1. [Code Commenting](#code-commenting)
+  1. [Validating Coding Standards and Styles](#validating-coding-standards-and-styles)
+    1. [Validating Coding Standards](#validating-coding-standards)
+    1. [Validating Coding Styles](#validating-coding-styles)
   1. [File Templates and Snippets](#file-templates-and-snippets)
   1. [Yeoman Generator](#yeoman-generator)
   1. [Routing](#routing)
@@ -2487,11 +2488,10 @@ Unit testing helps maintain clean code.
 Use file templates or snippets to help follow consistent styles and patterns. Here are templates and/or snippets for some of the web development editors and IDEs.
 
 ### Sublime Text
-###### [Style [Y250](#style-y250)]
 
   - Angular snippets that follow these styles and guidelines.
 
-    - Download the [Sublime Angular snippets](assets/sublime-angular-snippets?raw=true)
+    - TBD
     - Place it in your Packages folder
     - Restart Sublime
     - In a JavaScript file type these commands followed by a `TAB`
@@ -2506,20 +2506,18 @@ Use file templates or snippets to help follow consistent styles and patterns. He
     ```
 
 ### Visual Studio
-###### [Style [Y251](#style-y251)]
 
-  - Angular file templates that follow these styles and guidelines can be found at [SideWaffle](http://www.sidewaffle.com)
+  - Angular file templates that follow these styles and guidelines can be found at TBD
 
-    - Download the [SideWaffle](http://www.sidewaffle.com) Visual Studio extension (vsix file)
+    - Download the Visual Studio extension (vsix file)
     - Run the vsix file
     - Restart Visual Studio
 
 ### WebStorm
-###### [Style [Y252](#style-y252)]
 
   - Angular snippets and file templates that follow these styles and guidelines. You can import them into your WebStorm settings:
 
-    - Download the [WebStorm Angular file templates and snippets](assets/webstorm-angular-file-template.settings.jar?raw=true)
+    - Download the TBD
     - Open WebStorm and go to the `File` menu
     - Choose the `Import Settings` menu option
     - Select the file and click `OK`
@@ -2532,15 +2530,11 @@ Use file templates or snippets to help follow consistent styles and patterns. He
     ```
 
 ### Atom
-###### [Style [Y253](#style-y253)]
 
   - Angular snippets that follow these styles and guidelines.
-    ```
-    apm install angularjs-styleguide-snippets
-    ```
-    or
+    
     - Open Atom, then open the Package Manager (Packages -> Settings View -> Install Packages/Themes)
-    - Search for the package 'angularjs-styleguide-snippets'
+    - Search for the package TBD
     - Click 'Install' to install the package
 
   - In a JavaScript file type these commands followed by a `TAB`
@@ -2554,184 +2548,14 @@ Use file templates or snippets to help follow consistent styles and patterns. He
     ngfilter // creates an Angular filter
     ```
 
-### Brackets
-###### [Style [Y254](#style-y254)]
-
-  - Angular snippets that follow these styles and guidelines.
-    - Download the [Brackets Angular snippets](assets/brackets-angular-snippets.yaml?raw=true)
-    - Brackets Extension manager ( File > Extension manager )
-    - Install ['Brackets Snippets (by edc)'](https://github.com/chuyik/brackets-snippets)
-    - Click the light bulb in brackets' right gutter
-    - Click `Settings` and then `Import`
-    - Choose the file and select to skip or override
-    - Click `Start Import`
-
-  - In a JavaScript file type these commands followed by a `TAB`
-
-    ```javascript
-    // These are full file snippets containing an IIFE
-    ngcontroller // creates an Angular controller
-    ngdirective  // creates an Angular directive
-    ngfactory    // creates an Angular factory
-    ngapp        // creates an Angular module setter
-    ngservice    // creates an Angular service
-    ngfilter     // creates an Angular filter
-
-    // These are partial snippets intended to chained
-    ngmodule     // creates an Angular module getter
-    ngstate      // creates an Angular UI Router state defintion
-    ngconfig     // defines a configuration phase function
-    ngrun        // defines a run phase function
-    ngroute      // defines an Angular ngRoute 'when' definition
-    ngtranslate  // uses $translate service with its promise
-    ```
-
-## Yeoman Generator
-###### [Style [Y260](#style-y260)]
-
-You can use the [HotTowel yeoman generator](http://jpapa.me/yohottowel) to create an app that serves as a starting point for Angular that follows this style guide.
-
-1. Install generator-hottowel
-
-  ```
-  npm install -g generator-hottowel
-  ```
-
-2. Create a new folder and change directory to it
-
-  ```
-  mkdir myapp
-  cd myapp
-  ```
-
-3. Run the generator
-
-  ```
-  yo hottowel helloWorld
-  ```
-
-**[Back to top](#table-of-contents)**
-
-## Routing
-Client-side routing is important for creating a navigation flow between views and composing views that are made of many smaller templates and directives.
-
-###### [Style [Y270](#style-y270)]
-
-  - Use the [AngularUI Router](http://angular-ui.github.io/ui-router/) for client-side routing.
-
-    *Why?*: UI Router offers all the features of the Angular router plus a few additional ones including nested routes and states.
-
-    *Why?*: The syntax is quite similar to the Angular router and is easy to migrate to UI Router.
-
-  - Note: You can use a provider such as the `routerHelperProvider` shown below to help configure states across files, during the run phase.
-
-    ```javascript
-    // customers.routes.js
-    angular
-        .module('app.customers')
-        .run(appRun);
-
-    /* @ngInject */
-    function appRun(routerHelper) {
-        routerHelper.configureStates(getStates());
-    }
-
-    function getStates() {
-        return [
-            {
-                state: 'customer',
-                config: {
-                    abstract: true,
-                    template: '<ui-view class="shuffle-animation"/>',
-                    url: '/customer'
-                }
-            }
-        ];
-    }
-    ```
-
-    ```javascript
-    // routerHelperProvider.js
-    angular
-        .module('blocks.router')
-        .provider('routerHelper', routerHelperProvider);
-
-    routerHelperProvider.$inject = ['$locationProvider', '$stateProvider', '$urlRouterProvider'];
-    /* @ngInject */
-    function routerHelperProvider($locationProvider, $stateProvider, $urlRouterProvider) {
-        /* jshint validthis:true */
-        this.$get = RouterHelper;
-
-        $locationProvider.html5Mode(true);
-
-        RouterHelper.$inject = ['$state'];
-        /* @ngInject */
-        function RouterHelper($state) {
-            var hasOtherwise = false;
-
-            var service = {
-                configureStates: configureStates,
-                getStates: getStates
-            };
-
-            return service;
-
-            ///////////////
-
-            function configureStates(states, otherwisePath) {
-                states.forEach(function(state) {
-                    $stateProvider.state(state.state, state.config);
-                });
-                if (otherwisePath && !hasOtherwise) {
-                    hasOtherwise = true;
-                    $urlRouterProvider.otherwise(otherwisePath);
-                }
-            }
-
-            function getStates() { return $state.get(); }
-        }
-    }
-    ```
-
-###### [Style [Y271](#style-y271)]
-
-  - Define routes for views in the module where they exist. Each module should contain the routes for the views in the module.
-
-    *Why?*: Each module should be able to stand on its own.
-
-    *Why?*: When removing a module or adding a module, the app will only contain routes that point to existing views.
-
-    *Why?*: This makes it easy to enable or disable portions of an application without concern over orphaned routes.
-
-**[Back to top](#table-of-contents)**
-
 ## Task Automation
-Use [Gulp](http://gulpjs.com) or [Grunt](http://gruntjs.com) for creating automated tasks.  Gulp leans to code over configuration while Grunt leans to configuration over code. I personally prefer Gulp as I feel it is easier to read and write, but both are excellent.
+Use [Grunt](http://gruntjs.com) for creating automated tasks.  Grunt leans to configuration over code.
 
-> Learn more about gulp and patterns for task automation in my [Gulp Pluralsight course](http://jpapa.me/gulpps)
-
-###### [Style [Y400](#style-y400)]
-
-  - Use task automation to list module definition files `*.module.js` before all other application JavaScript files.
-
-    *Why?*: Angular needs the module definitions to be registered before they are used.
-
-    *Why?*: Naming modules with a specific pattern such as `*.module.js` makes it easy to grab them with a glob and list them first.
-
-    ```javascript
-    var clientApp = './src/client/app/';
-
-    // Always grab module files first
-    var files = [
-      clientApp + '**/*.module.js',
-      clientApp + '**/*.js'
-    ];
-    ```
-
-**[Back to top](#table-of-contents)**
-
+- Add more details about Grunt to this section
 
 ## Modularity
+
+Note: May not be applicable for consumer portal application.
 
 ### Many Small, Self Contained Modules
 
@@ -2784,43 +2608,8 @@ Use [Gulp](http://gulpjs.com) or [Grunt](http://gruntjs.com) for creating automa
 ## Angular docs
 For anything else, API reference, check the [Angular documentation](//docs.angularjs.org/api).
 
-## Contributing
+## References
 
-Open an issue first to discuss potential changes/additions. If you have questions with the guide, feel free to leave them as issues in the repository. If you find a typo, create a pull request. The idea is to keep the content up to date and use github’s native feature to help tell the story with issues and PR’s, which are all searchable via google. Why? Because odds are if you have a question, someone else does too! You can learn more here at about how to contribute.
+[AngularJS Style Guides by John Papa](https://github.com/johnpapa/angular-styleguide)
 
-*By contributing to this repository you are agreeing to make your content available subject to the license of this repository.*
-
-### Process
-    1. Discuss the changes in a GitHub issue.
-    2. Open a Pull Request, reference the issue, and explain the change and why it adds value.
-    3. The Pull Request will be evaluated and either merged or declined.
-
-## License
-
-_tldr; Use this guide. Attributions are appreciated._
-
-### Copyright
-
-Copyright (c) 2014-2015 [John Papa](http://johnpapa.net)
-
-### (The MIT License)
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-**[Back to top](#table-of-contents)**
+[Community Driven Best Practices for AngularJS](https://github.com/mgechev/angularjs-style-guide)
