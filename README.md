@@ -34,12 +34,20 @@
     1. [Factories](#factories)
       1. [Public Members and Functions](#public-members-and-functions)
       1. [Function Declarations](#function-declarations)
-  1. [Resolving Promises for a Controller](#resolving-promises-for-a-controller)
-  1. [Manual Annotating for Dependency Injection](#manual-annotating-for-dependency-injection)
-  1. [Minification and Annotation](#minification-and-annotation)
+    1. [REST API Wrapper Services](#rest-api-wrapper-services)
+    1. [Directives](#directives)
+      1. [Directive Restrict Guidelines](#directive-restrict-guidelines)
+      1. [Use of ControllerAs with Directives](#use-of-controlleras-with-directives)
+    1. [Filters](#filters)
+  1. [Resolving Routes](#resolving-routes)
+  1. [Angular Dependency Injection](#angular-dependency-injection)
+    1. [Manually Inject Dependencies](#manually-inject-dependencies)
+    1. [Use ngAnnonate to Inject Dependencies](#use-ngannonate-to-inject-dependencies)
+      1. [Gulp Configuration for ngAnnonate](#gulp-configuration-for-ngannonate)
   1. [Exception Handling](#exception-handling)
-  1. [Naming Guidelines](#naming)
-  1. [Modularity](#modularity)
+    1. [Angular Specific Exceptions](#angular-specific-exceptions)
+    1. [Global Exceptions](#global-exceptions)
+    1. [Routing Specific Exceptions](#routing-specific-exceptions)
   1. [Angular $ Wrapper Services](#angular--wrapper-services)
   1. [Testing](#testing)
   1. [Animations](#animations)
@@ -51,7 +59,7 @@
   1. [Yeoman Generator](#yeoman-generator)
   1. [Routing](#routing)
   1. [Task Automation](#task-automation)
-  1. [Filters](#filters)
+  1. [Modularity](#modularity)
   1. [Angular Docs](#angular-docs)
   1. [Contributing](#contributing)
   1. [License](#license)
@@ -521,29 +529,6 @@
 
     *Why?*: Provides an identifiable place to set configuration for a module.
 
-  - Inject code into [module configuration](https://docs.angularjs.org/guide/module#module-loading-dependencies) that must be configured before running the angular app. Ideal candidates include providers and constants.
-
-    *Why?*: This makes it easier to have a less places for configuration.
-
-  ```javascript
-  app.config(configure);
-
-  configure.$inject =
-      ['routerHelperProvider', 'exceptionHandlerProvider', 'toastr'];
-
-  function configure (routerHelperProvider, exceptionHandlerProvider, toastr) {
-      exceptionHandlerProvider.configure(config.appErrorPrefix);
-      configureStateHelper();
-
-      ////////////////
-
-      function configureStateHelper() {
-          routerHelperProvider.configure({
-              docTitle: 'NG-Modular: '
-          });
-      }
-  }
-  ```
 
 #### Routes Naming
 
@@ -819,14 +804,46 @@ require(['common/services/routeResolver',
 
   *Why?*: Unique names help avoid module name collisions. Separators help define modules and their submodule hierarchy. For example `app` may be your root module while `app.providerfinder` and `app.admin` may be modules that are used as dependencies of `app`.
 
-  - Use unique naming conventions with prefix for directive definitions.
+  - Inject code into [module configuration](https://docs.angularjs.org/guide/module#module-loading-dependencies) that must be configured before running the angular app. Ideal candidates include providers and constants.
 
-  *Why?*: Allow to share the directives with other teams and projects.  
+    *Why?*: This makes it easier to have a less places for configuration.
 
-  - Define a controller for a view, and try not to reuse the controller for other views. Instead, move reusable logic to factories and keep the controller simple and focused on its view.
-  - Exception for this would be webcenter specific pages that doesn't have any controller logic and will purely be used as cms page.
+  ```javascript
+  app.config(configure);
 
-    *Why?*: Reusing controllers with several views is brittle and good end to end (e2e) test coverage is required to ensure stability across large applications.
+  configure.$inject =
+      ['routerHelperProvider', 'exceptionHandlerProvider', 'toastr'];
+
+  function configure (routerHelperProvider, exceptionHandlerProvider, toastr) {
+      exceptionHandlerProvider.configure(config.appErrorPrefix);
+      configureStateHelper();
+
+      ////////////////
+
+      function configureStateHelper() {
+          routerHelperProvider.configure({
+              docTitle: 'NG-Modular: '
+          });
+      }
+  }
+  ```
+
+  - Any code that needs to run when an application starts should be declared in a factory, exposed via a function, and injected into the [run block](https://docs.angularjs.org/guide/module#module-loading-dependencies).
+
+    *Why?*: Code directly in a run block can be difficult to test. Placing in a factory makes it easier to abstract and mock.
+
+  ```javascript
+  app.run(runBlock);
+
+  runBlock.$inject = ['authenticator', 'translator'];
+
+  function runBlock(authenticator, translator) {
+      authenticator.initialize();
+      translator.initialize();
+  }
+  ```
+
+
 
 
 ### Controllers
@@ -860,6 +877,9 @@ require(['common/services/routeResolver',
   });
   ```
 
+  - Define a controller for a view, and try not to reuse the controller for other views. Instead, move reusable logic to factories and keep the controller simple and focused on its view. Exception for this would be webcenter specific pages that doesn't have any controller logic and will purely be used as cms page.
+
+    *Why?*: Reusing controllers with several views is brittle and good end to end (e2e) test coverage is required to ensure stability across large applications.
 
 #### Using vm with controllerAs
 
@@ -1651,6 +1671,43 @@ require(['common/services/routeResolver',
 
     Note: `bindToController` was introduced in Angular 1.3.0.
 
+### Filters
+
+  - Avoid using filters for scanning all properties of a complex object graph. Use filters for select properties.
+
+    *Why?*: Filters can easily be abused and negatively effect performance if not used wisely, for example when a filter hits a large and deep object graph.
+
+    ```javascript
+    ﻿'use strict';
+    define(['app'], function (app) {
+
+      var claimTypeFilter = function () {
+
+          return function (value) {
+              var result = "Unknown";
+              switch (value) {
+                  case -1:
+                      result = "View All"; break;
+                  case 1:
+                      result = "Medical"; break;
+                  case 2:
+                      result = "Pharmacy"; break;
+                  case 0:
+                      result = "Dental"; break;
+                  case 3:
+                      result = "Vision"; break;
+
+              }
+              return result;
+          };
+      };
+
+      app.filter('claimTypeFilter', claimTypeFilter);
+      //below register can be used if filter is registered after angular.bootstrap
+      //app.register.filter('claimTypeFilter', claimTypeFilter);
+    });
+    ```
+
 
 ## Resolving Routes
 
@@ -1866,7 +1923,7 @@ require(['common/services/routeResolver',
 
     Note: You can use same pattern like above to inject components to other class(s) like directives/factory/service/filters ...
 
-## Use ngAnnonate to Inject Dependencies
+### Use ngAnnonate to Inject Dependencies
 
   Note: below guide is not applicable if we use $inject in our code when defining injectable dependencies. described in previous section.
 
@@ -1924,7 +1981,7 @@ require(['common/services/routeResolver',
     > Note: Starting from Angular 1.3 you can use the [`ngApp`](https://docs.angularjs.org/api/ng/directive/ngApp) directive's `ngStrictDi` parameter to detect any potentially missing magnification safe dependencies. When present the injector will be created in "strict-di" mode causing the application to fail to invoke functions which do not use explicit function annotation (these may not be minification safe). Debugging info will be logged to the console to help track down the offending code. I prefer to only use `ng-strict-di` for debugging purposes only.
     `<body ng-app="APP" ng-strict-di>`
 
-### Gulp Configuration for ngAnnonate
+#### Gulp Configuration for ngAnnonate
 
   - Use [gulp-ng-annotate](https://www.npmjs.org/package/gulp-ng-annotate) or [grunt-ng-annotate](https://www.npmjs.org/package/grunt-ng-annotate) in an automated build task. Inject `/* @ngInject */` prior to any function that has dependencies.
 
@@ -2071,74 +2128,9 @@ require(['common/services/routeResolver',
     ```
 
 
-## Modularity
-
-### Many Small, Self Contained Modules
-
-  - Create small modules that encapsulate one responsibility.
-
-    *Why?*: Modular applications make it easy to plug and go as they allow the development teams to build vertical slices of the applications and roll out incrementally. This means we can plug in new features as we develop them.
-
-### Create an App Module
-
-  - Create an application root module whose role is pull together all of the modules and features of your application. Name this for your application.
-
-    *Why?*: Angular encourages modularity and separation patterns. Creating an application root module whose role is to tie your other modules together provides a very straightforward way to add or remove modules from your application.
-
-### Keep the App Module Thin
-
-  - Only put logic for pulling together the app in the application module. Leave features in their own modules.
-
-    *Why?*: Adding additional roles to the application root to get remote data, display views, or other logic not related to pulling the app together muddies the app module and make both sets of features harder to reuse or turn off.
-
-    *Why?*: The app module becomes a manifest that describes which modules help define the application.
-
-### Feature Areas are Modules
-
-  - Create modules that represent feature areas, such as layout, reusable and shared services, dashboards, and app specific features (e.g. customers, admin, sales).
-
-    *Why?*: Self contained modules can be added to the application with little or no friction.
-
-    *Why?*: Sprints or iterations can focus on feature areas and turn them on at the end of the sprint or iteration.
-
-    *Why?*: Separating feature areas into modules makes it easier to test the modules in isolation and reuse code.
-
-### Reusable Blocks are Modules
-
-  - Create modules that represent reusable application blocks for common services such as exception handling, logging, diagnostics, security, and local data stashing.
-
-    *Why?*: These types of features are needed in many applications, so by keeping them separated in their own modules they can be application generic and be reused across applications.
-
-### Module Dependencies
-
-  - The application root module depends on the app specific feature modules and any shared or reusable modules.
-
-    *Why?*: The main app module contains a quickly identifiable manifest of the application's features.
-
-    *Why?*: Each feature area contains a manifest of what it depends on, so it can be pulled in as a dependency in other applications and still work.
-
-    *Why?*: Intra-App features such as shared data services become easy to locate and share from within `app.core` (choose your favorite name for this module).
-
-    > In a small app, you can also consider putting all the shared dependencies in the app module where the feature modules have no direct dependencies. This makes it easier to maintain the smaller application, but makes it harder to reuse modules outside of this application.
 
 
 
-### Run Blocks
-
-  - Any code that needs to run when an application starts should be declared in a factory, exposed via a function, and injected into the [run block](https://docs.angularjs.org/guide/module#module-loading-dependencies).
-
-    *Why?*: Code directly in a run block can be difficult to test. Placing in a factory makes it easier to abstract and mock.
-
-  ```javascript
-  app.run(runBlock);
-
-  runBlock.$inject = ['authenticator', 'translator'];
-
-  function runBlock(authenticator, translator) {
-      authenticator.initialize();
-      translator.initialize();
-  }
-  ```
 
 ## Angular $ Wrapper Services
 
@@ -2802,13 +2794,57 @@ Use [Gulp](http://gulpjs.com) or [Grunt](http://gruntjs.com) for creating automa
 
 **[Back to top](#table-of-contents)**
 
-## Filters
 
-###### [Style [Y420](#style-y420)]
+## Modularity
 
-  - Avoid using filters for scanning all properties of a complex object graph. Use filters for select properties.
+### Many Small, Self Contained Modules
 
-    *Why?*: Filters can easily be abused and negatively effect performance if not used wisely, for example when a filter hits a large and deep object graph.
+  - Create small modules that encapsulate one responsibility.
+
+    *Why?*: Modular applications make it easy to plug and go as they allow the development teams to build vertical slices of the applications and roll out incrementally. This means we can plug in new features as we develop them.
+
+### Create an App Module
+
+  - Create an application root module whose role is pull together all of the modules and features of your application. Name this for your application.
+
+    *Why?*: Angular encourages modularity and separation patterns. Creating an application root module whose role is to tie your other modules together provides a very straightforward way to add or remove modules from your application.
+
+### Keep the App Module Thin
+
+  - Only put logic for pulling together the app in the application module. Leave features in their own modules.
+
+    *Why?*: Adding additional roles to the application root to get remote data, display views, or other logic not related to pulling the app together muddies the app module and make both sets of features harder to reuse or turn off.
+
+    *Why?*: The app module becomes a manifest that describes which modules help define the application.
+
+### Feature Areas are Modules
+
+  - Create modules that represent feature areas, such as layout, reusable and shared services, dashboards, and app specific features (e.g. customers, admin, sales).
+
+    *Why?*: Self contained modules can be added to the application with little or no friction.
+
+    *Why?*: Sprints or iterations can focus on feature areas and turn them on at the end of the sprint or iteration.
+
+    *Why?*: Separating feature areas into modules makes it easier to test the modules in isolation and reuse code.
+
+### Reusable Blocks are Modules
+
+  - Create modules that represent reusable application blocks for common services such as exception handling, logging, diagnostics, security, and local data stashing.
+
+    *Why?*: These types of features are needed in many applications, so by keeping them separated in their own modules they can be application generic and be reused across applications.
+
+### Module Dependencies
+
+  - The application root module depends on the app specific feature modules and any shared or reusable modules.
+
+    *Why?*: The main app module contains a quickly identifiable manifest of the application's features.
+
+    *Why?*: Each feature area contains a manifest of what it depends on, so it can be pulled in as a dependency in other applications and still work.
+
+    *Why?*: Intra-App features such as shared data services become easy to locate and share from within `app.core` (choose your favorite name for this module).
+
+    > In a small app, you can also consider putting all the shared dependencies in the app module where the feature modules have no direct dependencies. This makes it easier to maintain the smaller application, but makes it harder to reuse modules outside of this application.
+
 
 **[Back to top](#table-of-contents)**
 
