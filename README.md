@@ -2,6 +2,7 @@
 
 ## Table of Contents
 
+  1. [Guide to Start Coding in Consumer Portal Code Base](#guide-to-start-coding-in-consumer-portal-code-base)
   1. [Application Structure](#application-structure)
     1. [Single Responsibility](#single-responsibility)
     1. [Directory Structure](#directory-structure)
@@ -86,6 +87,18 @@
   1. [Angular Docs](#angular-docs)
   1. [References](#references)
 
+
+## Guide to Start Coding in Consumer Portal Code Base
+
+- Understand the [application structure](#application-structure), [component coding guidelines](#angular-component-coding) and [naming patterns](#naming-guidelines) before diving into coding for consumer portal project.
+
+- Create the required angular components (directive/controller/data service etc...) for your task/feature.
+
+- Go through the [asynchronous module definition](#asynchronous-module-definition) guidelines, this will allow you to understand how to configure your component to be loaded into angular application through RequireJS.
+
+- Once you configure the RequireJS configuration with your new component, you can update your view (incase you are using directive, or setup the route template in webcenter for new route). and test your changes through application.
+
+- As part of testing your changes, create the unit test spec file for your component code. then use [testing guidelines](#testing) to setup your spec file with testing framework, and run the unit test and make sure atleast 80% of your functional code is unit tested.
 
 ## Application Structure
 
@@ -819,6 +832,59 @@ require(['common/services/routeResolver',
 
 ```
 
+##### Define New Angular Component Path.
+
+- Define the directive/filter/service/controller path in "paths" array.
+
+```javascript
+paths: {
+        ////////////
+        'testDir' : 'test/directives/testDir' // abbrevation for directive : directive path (from components folder)
+        'testCtrl' : 'test/controllers/testCtrl' // abbrevation for controller : controller path (from components folder)
+        /////////
+    }
+```
+
+##### Define Sub Dependencies
+
+Note: Ex: Assume testCtrl define above require/use testDir directive. so before initiating the controller we need to make sure browser also load the dependent directive.
+
+- To achieve this, we will use the "shim" array to define sub dependencies like above.
+
+```shell
+shim: {
+        'dashCtrl': {
+            deps: ['cFilt', 'cdDir', 'clDir', 'msgDir'],
+            exports: 'dashCtrl'
+        },
+        etc...
+    //below shim object define the sub dependecy between testCtrl and testDir
+        'testCtrl': {
+            deps: ['testDir'], // list any sub dependent modules in this array for testCtrl. (requirejs will make sure these dependencies are loaded prior to loading testCtrl in browser.
+            exports: 'testCtrl'
+        }
+    }
+```
+
+##### Define Main Dependencies for angular.bootstrap
+
+- If any controller/service/directive/filter is required before angular app is initiated (bootstrap). list those dependencies in "require" function.
+
+- In most cases you won't need to load any directives/controllers in this, since those will be loaded per route basis. if you are using any framework level services or data services that will be executed as part of angular.config or angular.run, you will need to include them in this configuration section. so they are pre-loaded to browser when angular start bootstrap and execute its own angaulr.config and angular.run functions.
+
+```javascript
+require(
+//array with required modules/components before angular app bootstrap. requirejs will make sure these modules are pre-loaded into browser before bootstrap is executed.
+['common/services/routeResolver',
+          'app',
+          'authIntSrvc',
+          etc...
+          'tnDir'
+    ], function () {
+    angular.bootstrap(document, ['anthemPocApp']);
+});
+```
+
 
 ## Angular Component Coding
 
@@ -879,26 +945,31 @@ require(['common/services/routeResolver',
 - Use below Controller definition for new controller creation.
 
   ```javascript
-  'use strict';
+  'use strict'; //used to make sure global varialbles are not used.
 
   define(['app'], function (app) {
 
+      //define any dependency injections using this variable, so minifications won't break the DI parameter naming.
       var injectParams = ['$scope'];
 
+      //specify the dipendency injected variable names as function parameters.
       var SomeController = function ($scope) {
                                        
           var vm = this;
           vm.translationComplete = true;
           init();
 
+          //initialization code goes into this function
           function init() {
           }
 
 
       };
 
+      //manually inject  dependency injected variable array.
       SomeController.$inject = injectParams;
 
+      // use app.register since we load the controllers asynchronously using requirejs for each route
       app.register.controller('SomeCtrl', SomeController);
   });
   ```
@@ -1550,10 +1621,11 @@ require(['common/services/routeResolver',
    * @desc order directive that is specific to the order module at a company named Acme
    * @example <div class="tcp-some-dir"></div>
    */
-  ﻿'use strict';
+  ﻿'use strict'; //used to makesure global varialbles are not defined.
 
   define(['app'], function (app) {
 
+      //specify the dependency injected variable names as function parameters.
       var injectParams = ['$q',
                           '$parse',
                           '$location',
@@ -1569,13 +1641,15 @@ require(['common/services/routeResolver',
                                      $timeout) {
           return {
               restrict: 'AEC',
-              templateUrl: 'common/views/someView.html',
+              templateUrl: 'common/views/someView.html', //use templateUrl or template as for your requirement
+              //isolated scope, you can use shared scope if you need ...
               scope: {
               },
               link: function (scope, element, attrs, controllers) {
                   scope.data = [];
                   init();
 
+                  //initialization code goes into this function
                   function init() {
                       someFunction();
                   }
@@ -1586,6 +1660,7 @@ require(['common/services/routeResolver',
           };
       };
 
+      //manually inject  dependency injected variable array.
       someDir.$inject = injectParams;
 
       app.directive('tcpSomeDir', someDir);
@@ -2286,6 +2361,195 @@ Unit testing helps maintain clean code.
     /app/customers/controllers/customerCtrl.js
                              /controllers/customeCtrl.spec.js
     ```
+
+### Configure Testing Framework
+
+- Unit test framework uses it's own "app.js" to define the angular module for portal application. So make sure to review if your changes should be added to test\app.test.js (if you make any changes in app\app.js file, not all the changes can be(need to be) tested in unit test for angular.config and angular.run). 
+
+- Karma is used as unit test runner, and the config for karama is located in test\karma.conf.js file. you would rarely make changes to this file, and needs to be reviewed with application lead.
+
+- PhantomJS is cofnigured as test running browser, and since karma doesn't use same file path ass app folder to run the unit tests. we need to use a seperate requirejs configuration file for unit test(s).
+
+- When you create new angular component make sure you also update the requirejs config file for unit test located in test\test.requirejs.config.js. karma/phantomjs will use this requirejs configuration to located the component script files to be loaded for unit test runner.
+
+- Sample "paths" array from test requirejs.cofnig is located below. you should be able to notice that "baseUrl" has different value than what we have in app requirejs config (this is becuase karma uses different base path for the application when running unit tests ...).
+
+```javascript
+///////////
+
+baseUrl: 'base/app',
+paths: {
+    'app': '/base/test/app.test',
+    'alDir': 'common/directives/ajaxLoadingDir',
+    'tpDir': 'common/directives/tooltipPopoverDir',
+    'cdDir': 'claims/directives/claimsDropdownDir',
+    'benefitSrvc': 'benefits/services/benefitsSrvc',
+    'providerSrvc': 'provider/services/providerSrvc',
+    'claimsSrvc': 'claims/services/claimsSrvc',
+    'userSrvc': 'register/userSrvc',
+    'bFilt': 'benefits/filters/benefitFltr',
+    'cFilt': 'claims/filters/claimsFltr',
+    'cpDir': 'benefits/directives/coveragePeriodDir',
+    'tnDir': 'common/directives/topNavDir',
+    'clDir': 'claims/directives/claimsListDir',
+    'cHlpr': 'common/services/cookieHlpr',
+    'contSrvc': 'common/services/contentSrvc',
+    'msgSrvc': 'common/services/messageSrvc',
+    'msgDir': 'common/directives/contentMessageDir',
+    'mainCtrl': 'home/controllers/mainCtrl',
+    'loginCtrl': 'login/controllers/loginCtrl',
+    'regCtrl': 'register/registerCtrl',
+    'dashCtrl': 'dashboard/controllers/dashboardCtrl',
+    'coCtrl': 'claims/controllers/claimsOverviewCtrl',
+    'medCtrl': 'benefits/controllers/medicalCtrl',
+    'authSrvc': 'login/services/authSrvc',
+    'authIntSrvc': 'common/services/httpInterceptor',
+    'modHlpr': 'common/services/modalHlpr',
+    'wtDir': 'common/directives/warnTimerDir',
+    'siHlpr': 'common/services/sessionIdleHlpr',
+    'wcsCtrl': 'common/controllers/wcsCtrl'
+}
+
+/////////////
+```
+
+- When configuring your components in requirejs.config, you will need to use "shim" array more excessively for unit tests. all angular components that you want to test should also be listed in "shim" array.
+
+- Sample "shim" list is given below from test requirejs config. as you can see all the filters, directives, controllers etc ... are listed in shim array as seperate shim item (this is because, karma will use this to load the specific component file to browser). how we use this shim/path array definition for the component in spec file will be elaborated in next point.
+
+```javascript
+///////////
+
+shim: {
+    'app': {
+        exports: 'app'
+    },
+    'contSrvc': {
+        deps: ['app'],
+        exports: 'contSrvc'
+    },
+    'cHlpr': {
+        deps: ['app'],
+        exports: 'cHlpr'
+    },
+    'regCtrl': {
+        deps: ['app', 'userSrvc', 'authSrvc'],
+        exports: 'regCtrl'
+    },
+    'mainCtrl': {
+        deps: ['app', 'cHlpr'],
+        exports: 'mainCtrl'
+    },
+    'dashCtrl': {
+        deps: ['app'],
+        exports: 'dashCtrl'
+    },
+    'medCtrl': {
+        deps: ['app', 'bFilt', 'cHlpr', 'benefitSrvc'],
+        exports: 'medCtrl'
+    },
+    'bFilt': {
+        deps: ['app'],
+        exports: 'bFilt'
+    },
+    'alDir': {
+        deps: ['app'],
+        exports: 'alDir'
+    }
+},
+
+/////////////
+```
+
+#### How to Write spec File for Unit Testing
+
+- Once you complete the above points to setup your component code with karama/phantomjs unit test framework, you can start coding the unit test spec file.
+
+- First you need to use requirejs module definition pattern to define your spec file, and inject the requirejs angular component definition like below.
+  - if you closely look at the below code, you should be able to see that we asking requirejs to make sure to load the "medCtrl" requirejs module before this spec file is executed in browser. since this spec file is used to unit test the MedialController ("medCtrl" requirejs module). so when we add this definition, requirejs loads the all dependecies that are required for "medCtrl" module and also load "medCtrl" component to browser and finally load this spec file to browser.
+
+```javascript
+//////
+
+define(['medCtrl'], function () {
+
+//////
+```
+
+- Next lets look at how we code the pre-initialization code for unit testing. (refer below sample spec file for MedicalController)
+  - as part of jasmine we need to decribe the component that we are going to unit test first.
+  - initialize the angular.module(s) that are needed  before start loading angualr component to be unit tested.
+  - after angualr.module is loaded and initialized, use jasmine inject function to load angular providers for (controller, rootScope etc ....), jasmine will dependency inject the angualr providers properly.
+  - you can use $controller, $injector to access any other angular components that are required for unit testing.
+  - create new scope using $rootScope
+  - use angular $httpBackend to mock any service calls if needed.
+  - if the component that you are going to test is a controller, use $controller to get the angualr controller component that you need to unit test. as part of initializing the controller, pass the arguments for any dependency injected components that the controller use.
+  - Use jasmine test stories to create your unit test stories.
+  - Refer existing directive/filter/service spec files to understand how to test the those angular components.
+
+
+```javascript
+﻿'use strict';
+
+define(['medCtrl'], function () {
+   // describe the angular component to be unit tested.
+   describe('Utest MedicalController', function () {
+       // define the variables that are needed for unit testing purposes
+       var medicalController,
+         scope, $httpBackend, coverageDataHandler,
+           benefitSrvcUrl = 'http://va10dwviss013:9999/api/claimsservice/getAllClaims';
+
+       //define/init the angular.module that needs to be loaded before angular component can be unit tested
+       beforeEach(module('routeResolverServices'));
+       beforeEach(module('anthemMemberPortal'));
+
+       //use jamine inject function to dependency inject the angular providers like $controller, $rootScope, $injector etc ...
+       beforeEach(inject(function ($controller, $rootScope, $injector, benefitsService, contentModules) {
+           //create new scope for controller to be used
+           scope = $rootScope.$new();
+           //get $httpBackend provider from angular $injector.
+           $httpBackend = $injector.get('$httpBackend');
+           //use $httpBackend to mock service call
+           $httpBackend.when('POST', 'http://va10dlvwam002.wellpoint.com:9087/poc/dashboards/getwelcomemessage?module=medical')
+                                  .respond({ userId: 'userX' }, { 'A-Token': 'xxx' });
+
+           //get the angular controller component to be unit tested
+           medicalController = $controller('MedicalCtrl', {
+               $scope: scope,
+               $location: $injector.get('$location'),
+               $filter: $injector.get('$filter'),
+               $window: $injector.get('$window'),
+               $timeout: $injector.get('$timeout'),
+               benefitsService: benefitsService
+           });
+       }));
+
+       afterEach(function () {
+           $httpBackend.verifyNoOutstandingExpectation();
+           $httpBackend.verifyNoOutstandingRequest();
+       });
+
+       it('hidePlanData should be true', function () {
+           expect(medicalController.model.hidePlanData).toBe(true);
+       });
+
+       it('calculateWidth should be 20', function () {
+           expect(medicalController.model.calculateWidth(100.00, 500.00, 'accum')).toBe(20);
+       });
+
+       it('calculateWidth should be 15', function () {
+           expect(medicalController.model.calculateWidth(50.00, 500.00, 'accum')).toBe(15);
+       });
+
+       it('test httpBackend', function () {
+           $httpBackend.expectPOST('http://va10dlvwam002.wellpoint.com:9087/poc/dashboards/getwelcomemessage?coverageStart=1/1/2015&coverageEnd=12/31/2015&coverageMember=001').respond({});
+           medicalController.model.onChangeCoveragePeriod('1/1/2015', '12/31/2015', '001');
+           $httpBackend.flush();
+           expect(medicalController.model.benefitLevelData.length).toBeGreaterThan(1);
+       });
+   });
+});
+```
 
 ## Animations
 
